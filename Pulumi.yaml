@@ -1,0 +1,7 @@
+name: vcs
+description: Version control infrastructure
+runtime: bun
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: bun
