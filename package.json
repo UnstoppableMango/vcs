@@ -6,6 +6,7 @@
         "@types/bun": "latest"
     },
     "dependencies": {
+        "@pulumi/github": "^6.14.0",
         "@pulumi/pulumi": "^3.226.0"
     },
     "peerDependencies": {
