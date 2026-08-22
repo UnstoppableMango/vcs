@@ -1,4 +1,4 @@
-import { integrationIds, PrivateRepo, PublicRepo } from "../components";
+import { integrationIds, PrivateRepo, PublicRepo } from "pulumi-components";
 
 export const pfsense = new PrivateRepo("pfsense", {
 	description: "pfSense configuration",

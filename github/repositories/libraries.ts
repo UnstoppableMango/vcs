@@ -1,5 +1,5 @@
 import * as gh from "@pulumi/github";
-import { integrationIds, PublicRepo } from "../components";
+import { integrationIds, PublicRepo } from "pulumi-components";
 
 export const cliwrapFsharp = new gh.Repository(
 	"CliWrap.FSharp",

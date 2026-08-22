@@ -1,4 +1,4 @@
-import { Fork, integrationIds, PublicRepo } from "../components";
+import { Fork, integrationIds, PublicRepo } from "pulumi-components";
 
 export const nilFork = new Fork("nil", {
 	sourceOwner: "oxalica",

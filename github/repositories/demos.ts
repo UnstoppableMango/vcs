@@ -1,5 +1,5 @@
 import * as gh from "@pulumi/github";
-import { integrationIds, PublicRepo } from "../components";
+import { integrationIds, PublicRepo } from "pulumi-components";
 
 export const ansibleOrchard = new PublicRepo("ansible-orchard", {
 	description: "Collection of Ansible playbooks for infrastructure and apps",
