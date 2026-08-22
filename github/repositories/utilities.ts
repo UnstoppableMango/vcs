@@ -1,5 +1,5 @@
 import * as gh from "@pulumi/github";
-import { integrationIds, PublicRepo } from "../components";
+import { integrationIds, PublicRepo } from "pulumi-components";
 
 export const devcontainers = new PublicRepo("devcontainers", {
 	description: "Home-grown devcontainer images",

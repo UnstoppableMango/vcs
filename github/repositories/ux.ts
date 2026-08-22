@@ -1,5 +1,5 @@
 import * as gh from "@pulumi/github";
-import { integrationIds, PublicRepo } from "../components";
+import { integrationIds, PublicRepo } from "pulumi-components";
 
 export const a2b = new PublicRepo("a2b", {
 	description: "Registry for converter utilities",
