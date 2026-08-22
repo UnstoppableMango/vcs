@@ -29,6 +29,7 @@
             packages =
               with pkgs;
               [
+                glab
                 bun
                 gnumake
                 nixfmt
