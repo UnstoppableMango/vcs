@@ -1,4 +1,4 @@
 config:
   gitlab:token:
-    secure: AAABAA9c6PU43PfaVWOnY726P1sYTpFC20vf/KpMBe7JXrf3LONCN+dlpcP+yNpkDi0CtOrlL+n5v7dJ3LgOeP/2x/op3HC9pVj+j62XuYZscWiV4wWSxJDJmUExtA==
+    secure: v1:Ln4DvalUWd0s+HIs:AyRw970xVicaU4Sf6G6yD5dWumr0vUQLlgSMquPufQONGi6wWCb75F8lI9imjVVyurgyyA9kcjJX6Ak4oBBKKWlUUhV5l1LaG0dhSb0E
 encryptionsalt: v1:BPpuURebBXc=:v1:zfj8JSZaBJsDJ2mB:lhi0GDMvGu39tkGW3gapc2/tGZyV0w==
