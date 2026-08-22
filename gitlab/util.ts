@@ -14,7 +14,7 @@ export function projectIn(
 	args: ProjectArgs = {},
 ) {
 	const path = args.path ?? name;
-	return new gitlab.Project(path, {
+	return new gitlab.Project(name, {
 		name,
 		path,
 		namespaceId: group.id.apply((x) => Number(x)),
