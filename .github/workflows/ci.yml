@@ -34,5 +34,5 @@ jobs:
         with:
           name: unstoppablemango
 
-        # TODO: Actual Pulumi CI stuff
-      - run: nix develop -c pulumi install
+      # TODO: Actual Pulumi CI stuff
+      # - run: nix develop -c pulumi install
