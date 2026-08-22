@@ -23,16 +23,60 @@ jobs:
 
   pulumi:
     runs-on: ubuntu-latest
+    concurrency:
+      group: pulumi-prod
+      cancel-in-progress: false
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - uses: cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3 # v31.10.6
         with:
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          github_access_token: ${{ github.token }}
 
       - uses: cachix/cachix-action@5f2d7c5294214f71b873db4b969586b980625e71 # v17
         with:
           name: unstoppablemango
 
-      # TODO: Actual Pulumi CI stuff
-      # - run: nix develop -c pulumi install
+      - uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Read secrets from Key Vault
+        uses: azure/cli@9eb25b8360668fb0ecbafa808d40e2197b2f5f52 # v3.0.0
+        with:
+          inlineScript: |
+            get() {
+              az keyvault secret show \
+                --vault-name unstoppablemango-pulumi \
+                --name "$1" \
+                --query value -o tsv
+            }
+
+            passphrase=$(get vcs-pulumi-passphrase)
+            access_key_id=$(get vcs-state-bucket-key-id)
+            secret_access_key=$(get vcs-state-bucket-key)
+
+            echo "::add-mask::$passphrase"
+            echo "::add-mask::$access_key_id"
+            echo "::add-mask::$secret_access_key"
+
+            {
+              echo "PULUMI_CONFIG_PASSPHRASE=$passphrase"
+              echo "AWS_ACCESS_KEY_ID=$access_key_id"
+              echo "AWS_SECRET_ACCESS_KEY=$secret_access_key"
+            } >> "$GITHUB_ENV"
+
+      - run: nix develop -c bun install --frozen-lockfile
+
+      - run: nix develop -c pulumi stack select prod
+
+      - if: github.event_name == 'pull_request'
+        run: nix develop -c pulumi preview --diff
+
+      - if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: nix develop -c pulumi up --yes
