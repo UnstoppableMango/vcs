@@ -1,4 +1,4 @@
-import { integrationIds, PublicRepo } from "../components";
+import { integrationIds, PublicRepo } from "pulumi-components";
 
 export const terraformProviderSmallImprovements = new PublicRepo(
 	"terraform-provider-small-improvements",

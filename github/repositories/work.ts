@@ -1,4 +1,4 @@
-import { PublicRepo } from "../components";
+import { PublicRepo } from "pulumi-components";
 
 export const kubernetesTheWrongWay = new PublicRepo(
 	"kubernetes-the-wrong-way",

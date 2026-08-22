@@ -1,5 +1,5 @@
 import * as gh from "@pulumi/github";
-import { integrationIds, PrivateRepo, PublicRepo } from "../components";
+import { integrationIds, PrivateRepo, PublicRepo } from "pulumi-components";
 
 export const minecraftManager = new PublicRepo("minecraft-manager", {
 	description:
