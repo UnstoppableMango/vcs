@@ -7,6 +7,7 @@
     },
     "dependencies": {
         "@pulumi/github": "^6.14.0",
+        "@pulumi/gitlab": "^10.1.1",
         "@pulumi/pulumi": "^3.226.0",
         "pulumi-components": "github:UnstoppableMango/pulumi-components"
     },
