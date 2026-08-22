@@ -26,10 +26,17 @@
         { pkgs, ... }:
         {
           devShells.default = pkgs.mkShellNoCC {
-            packages = with pkgs; [
-              gnumake
-              nixfmt
-            ];
+            packages =
+              with pkgs;
+              [
+                bun
+                gnumake
+                nixfmt
+                pulumi
+              ]
+              ++ (with pkgs.pulumiPackages; [
+                pulumi-bun
+              ]);
           };
 
           treefmt.programs = {
