@@ -23,3 +23,28 @@ export function projectIn(
 		archived: args.archived,
 	}, { parent: group });
 }
+
+export interface SubgroupArgs {
+	/** Path segment within the parent. Also the display name unless `name` is set. */
+	path: string;
+	description: Input<string>;
+	name?: string;
+}
+
+/**
+ * A group nested under `parent`. Subgroups have no global-uniqueness or
+ * manual-creation constraints, so Pulumi can create them directly.
+ */
+export function subgroup(
+	resourceName: string,
+	parent: gitlab.Group,
+	args: SubgroupArgs,
+) {
+	return new gitlab.Group(resourceName, {
+		name: args.name ?? args.path,
+		path: args.path,
+		parentId: parent.id.apply((x) => Number(x)),
+		description: args.description,
+		visibilityLevel: "public",
+	}, { parent });
+}
