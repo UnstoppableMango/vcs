@@ -1,184 +1,144 @@
 import * as gitlab from "@pulumi/gitlab";
+import { subgroup } from "./util";
 
 /**
- * GitLab.com does not allow creating top-level groups via the API/Terraform provider.
- * Each of the top-level `gitlab.Group`s below must be created once by hand in the
- * GitLab UI, then imported before `pulumi up` will do anything useful with it:
+ * Everything lives under a single top-level group.
  *
- *   pulumi import gitlab:index/group:Group homelab homelab
- *   pulumi import gitlab:index/group:Group personal personal
- *   ...(one per top-level group, path == the group's `path` below)
+ * Two GitLab.com facts drive this shape:
  *
- * Subgroups (libraries/dotnet, demos/imaug, forks/*) have no such restriction and
- * can be created directly by Pulumi via `parentId`.
+ *   1. Top-level groups cannot be created via the API/Terraform provider, so
+ *      every root costs a manual UI step plus a `pulumi import`.
+ *   2. Top-level paths are globally unique across all of gitlab.com. Generic
+ *      names like `pulumi` and `libraries` are already taken by other parties,
+ *      so a flat set of category roots is not even registrable.
+ *
+ * One namespaced root solves both. It is the only group created by hand;
+ * every category below it is an ordinary subgroup that Pulumi creates via
+ * `parentId`, and category names only have to be unique within the root.
+ *
+ * One-time setup, before the first `pulumi up`:
+ *
+ *   1. Create the group at https://gitlab.com/groups/new (path: unmango)
+ *   2. pulumi import gitlab:index/group:Group unmango unmango
  */
+export const rootGroup = new gitlab.Group("unmango", {
+	name: "unmango",
+	path: "unmango",
+	description: "UnstoppableMango's projects, mirrored from GitHub.",
+	visibilityLevel: "public",
+});
 
-export const homelabGroup = new gitlab.Group("homelab", {
-	name: "homelab",
+export const homelabGroup = subgroup("homelab", rootGroup, {
 	path: "homelab",
 	description: "Physical + cluster infrastructure that keeps THECLUSTER running.",
-	visibilityLevel: "public",
 });
 
-export const personalGroup = new gitlab.Group("personal", {
-	name: "personal",
+export const personalGroup = subgroup("personal", rootGroup, {
 	path: "personal",
 	description: "Identity, personal config, and one-off life admin.",
-	visibilityLevel: "public",
 });
 
-export const pulumiGroup = new gitlab.Group("pulumi", {
-	name: "pulumi",
+export const pulumiGroup = subgroup("pulumi", rootGroup, {
 	path: "pulumi",
 	description: "Own Pulumi providers, components, and the IaC repos that drive them.",
-	visibilityLevel: "public",
 });
 
-export const terraformGroup = new gitlab.Group("terraform", {
-	name: "terraform",
+export const terraformGroup = subgroup("terraform", rootGroup, {
 	path: "terraform",
 	description: "Own Terraform providers. Repo names stay exactly terraform-provider-* — see note in each project.",
-	visibilityLevel: "public",
 });
 
-export const operatorsGroup = new gitlab.Group("operators", {
-	name: "operators",
+export const operatorsGroup = subgroup("operators", rootGroup, {
 	path: "operators",
 	description: "Custom Kubernetes controllers/operators for self-hosted services.",
-	visibilityLevel: "public",
 });
 
-export const uxGroup = new gitlab.Group("ux", {
-	name: "ux",
+export const uxGroup = subgroup("ux", rootGroup, {
 	path: "ux",
 	description: "The universal codegen framework and its family of source2target converters.",
-	visibilityLevel: "public",
 });
 
-export const librariesGroup = new gitlab.Group("libraries", {
-	name: "libraries",
+export const librariesGroup = subgroup("libraries", rootGroup, {
 	path: "libraries",
 	description: "Standalone libraries, grouped by ecosystem.",
-	visibilityLevel: "public",
 });
 
-export const funGroup = new gitlab.Group("fun", {
-	name: "fun",
+export const funGroup = subgroup("fun", rootGroup, {
 	path: "fun",
 	description: "Hobby-grade .NET libraries and language experiments.",
-	visibilityLevel: "public",
 });
 
-export const applicationsGroup = new gitlab.Group("applications", {
-	name: "applications",
+export const applicationsGroup = subgroup("applications", rootGroup, {
 	path: "applications",
 	description: "End-user apps and bots with a UI or a Discord presence.",
-	visibilityLevel: "public",
 });
 
-export const demosGroup = new gitlab.Group("demos", {
-	name: "demos",
+export const demosGroup = subgroup("demos", rootGroup, {
 	path: "demos",
 	description: "Conference talks, katas, and one-off learning exercises.",
-	visibilityLevel: "public",
 });
 
-export const utilitiesGroup = new gitlab.Group("utilities", {
-	name: "utilities",
+export const utilitiesGroup = subgroup("utilities", rootGroup, {
 	path: "utilities",
 	description: "Small standalone tools that don't belong to a bigger family.",
-	visibilityLevel: "public",
 });
 
-export const workGroup = new gitlab.Group("work", {
-	name: "work",
+export const workGroup = subgroup("work", rootGroup, {
 	path: "work",
 	description: "Client and employer-adjacent proof-of-concepts.",
-	visibilityLevel: "public",
 });
 
-export const archivedGroup = new gitlab.Group("archived", {
-	name: "archived",
+export const archivedGroup = subgroup("archived", rootGroup, {
 	path: "archived",
 	description: "Repos already archived:true on GitHub. Parked, not maintained.",
-	visibilityLevel: "public",
 });
 
-export const forksGroup = new gitlab.Group("forks", {
-	name: "forks",
+export const forksGroup = subgroup("forks", rootGroup, {
 	path: "forks",
 	description: "Third-party forks kept for upstream PRs. Every project below keeps its upstream name exactly.",
-	visibilityLevel: "public",
 });
 
-export const librariesDotnetGroup = new gitlab.Group("dotnet", {
-	name: "dotnet",
+export const librariesDotnetGroup = subgroup("libraries-dotnet", librariesGroup, {
 	path: "dotnet",
-	parentId: librariesGroup.id.apply((x) => Number(x)),
 	description: "F#/C# packages published to NuGet — names are package IDs, kept as-is.",
-	visibilityLevel: "public",
-}, { parent: librariesGroup });
+});
 
-export const librariesGoGroup = new gitlab.Group("go", {
-	name: "go",
+export const librariesGoGroup = subgroup("libraries-go", librariesGroup, {
 	path: "go",
-	parentId: librariesGroup.id.apply((x) => Number(x)),
 	description: "Standalone Go packages.",
-	visibilityLevel: "public",
-}, { parent: librariesGroup });
+});
 
-export const demosImaugGroup = new gitlab.Group("imaug", {
-	name: "imaug",
+export const demosImaugGroup = subgroup("demos-imaug", demosGroup, {
 	path: "imaug",
-	parentId: demosGroup.id.apply((x) => Number(x)),
 	description: "IMAUG conference talk repos — renamed now that the group name carries the context.",
-	visibilityLevel: "public",
-}, { parent: demosGroup });
+});
 
-export const forksKubernetesGroup = new gitlab.Group("kubernetes", {
-	name: "kubernetes",
+export const forksKubernetesGroup = subgroup("forks-kubernetes", forksGroup, {
 	path: "kubernetes",
-	parentId: forksGroup.id.apply((x) => Number(x)),
 	description: "Kubernetes-ecosystem forks.",
-	visibilityLevel: "public",
-}, { parent: forksGroup });
+});
 
-export const forksProxmoxGroup = new gitlab.Group("proxmox", {
-	name: "proxmox",
+export const forksProxmoxGroup = subgroup("forks-proxmox", forksGroup, {
 	path: "proxmox",
-	parentId: forksGroup.id.apply((x) => Number(x)),
 	description: "k8s-proxmox org forks.",
-	visibilityLevel: "public",
-}, { parent: forksGroup });
+});
 
-export const forksTalosGroup = new gitlab.Group("talos", {
-	name: "talos",
+export const forksTalosGroup = subgroup("forks-talos", forksGroup, {
 	path: "talos",
-	parentId: forksGroup.id.apply((x) => Number(x)),
 	description: "Sidero/Talos-ecosystem forks.",
-	visibilityLevel: "public",
-}, { parent: forksGroup });
+});
 
-export const forksPulumiGroup = new gitlab.Group("pulumi", {
-	name: "pulumi",
+export const forksPulumiGroup = subgroup("forks-pulumi", forksGroup, {
 	path: "pulumi",
-	parentId: forksGroup.id.apply((x) => Number(x)),
-	description: "Forks of pulumi/* itself — not the original-work Pulumi group above.",
-	visibilityLevel: "public",
-}, { parent: forksGroup });
+	description: "Forks of pulumi/* itself — not the original-work pulumi group above.",
+});
 
-export const forksNixGroup = new gitlab.Group("nix", {
-	name: "nix",
+export const forksNixGroup = subgroup("forks-nix", forksGroup, {
 	path: "nix",
-	parentId: forksGroup.id.apply((x) => Number(x)),
 	description: "Nix ecosystem forks.",
-	visibilityLevel: "public",
-}, { parent: forksGroup });
+});
 
-export const forksMiscGroup = new gitlab.Group("misc", {
-	name: "misc",
+export const forksMiscGroup = subgroup("forks-misc", forksGroup, {
 	path: "misc",
-	parentId: forksGroup.id.apply((x) => Number(x)),
 	description: "Everything else — one fork each of a lot of different worlds.",
-	visibilityLevel: "public",
-}, { parent: forksGroup });
+});

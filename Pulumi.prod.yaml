@@ -1,6 +1,6 @@
 config:
   gitlab:token:
-    secure: v1:Ln4DvalUWd0s+HIs:AyRw970xVicaU4Sf6G6yD5dWumr0vUQLlgSMquPufQONGi6wWCb75F8lI9imjVVyurgyyA9kcjJX6Ak4oBBKKWlUUhV5l1LaG0dhSb0E
+    secure: v1:7Qb+fVloZ/0lO2Mt:BiVaeqIR9KL6et8FMWa6UouFaduKAKj+qXPA/CjMFgG1ksHjW3msbxVeXG+d9uVTYblzWGOcVlJm4x9jNftiZSxbasOVDqhFAa18zI+K
   github:token:
     secure: v1:NAdY9TMDh2S45+De:cIo3eF+U+Q0BG1oyZbnqVzUL8GFlyn2l3513PBS7QIT86uJXJ6iBrYllQVLr1xN1X+sSeYWpxGS+5XJ3LB7Iq0m4oDIgMi3DC1NuSmRqfNqxVqffmofFs8XuJ/Op6qPkU1JXZRKU6EMfA02vNw==
   github:owner: UnstoppableMango
