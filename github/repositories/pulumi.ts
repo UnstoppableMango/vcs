@@ -10,6 +10,18 @@ export const vcs = new PublicRepo("vcs", {
 	],
 });
 
+export const pulumiComponents = new PublicRepo("pulumi-components", {
+	description: "Reusable Pulumi component resources",
+	topics: ["pulumi", "iac", "components", "typescript"],
+	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
+});
+
+export const pulumi2nix = new PublicRepo("pulumi2nix", {
+	description: "Generate Nix expressions from Pulumi projects",
+	topics: ["pulumi", "nix", "tooling"],
+	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
+});
+
 export const pulumiCiMgmt = new gh.Repository(
 	"pulumi-ci-mgmt",
 	{
@@ -79,6 +91,34 @@ export const pulumiProxmox = new gh.Repository(
 		template: {
 			owner: "pulumi",
 			repository: "pulumi-component-provider-ts-boilerplate",
+		},
+		visibility: "public",
+	},
+	{ protect: true },
+);
+
+export const pulumiProviderGit = new gh.Repository(
+	"pulumi-provider-git",
+	{
+		name: "pulumi-provider-git",
+		allowAutoMerge: true,
+		allowMergeCommit: false,
+		deleteBranchOnMerge: true,
+		description:
+			"Pulumi provider for managing the desired state of git repositories, bridged from terraform-provider-git",
+		hasIssues: true,
+		securityAndAnalysis: {
+			secretScanning: {
+				status: "disabled",
+			},
+			secretScanningPushProtection: {
+				status: "disabled",
+			},
+		},
+		squashMergeCommitTitle: "PR_TITLE",
+		template: {
+			owner: "pulumi",
+			repository: "pulumi-tf-provider-boilerplate",
 		},
 		visibility: "public",
 	},

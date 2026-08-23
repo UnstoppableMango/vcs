@@ -46,6 +46,12 @@ export const gossamer2nix = new PublicRepo("gossamer2nix", {
 	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
 });
 
+export const goreleaser2nix = new PublicRepo("goreleaser2nix", {
+	description: "Convert GoReleaser projects to Nix derivations",
+	topics: ["nix", "goreleaser", "go"],
+	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
+});
+
 export const multiDownloaderNxDocker = new gh.Repository(
 	"multi-downloader-nx-docker",
 	{
