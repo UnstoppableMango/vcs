@@ -99,4 +99,4 @@ jobs:
         run: nix develop -c pulumi preview --diff
 
       - if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: nix develop -c pulumi up --yes
+        run: nix develop -c pulumi up --refresh --yes
