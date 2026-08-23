@@ -1,5 +1,4 @@
 export * from "./applications";
-export * from "./archived";
 export * from "./demos";
 export * from "./forks";
 export * from "./fun";

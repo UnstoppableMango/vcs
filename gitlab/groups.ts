@@ -88,11 +88,6 @@ export const workGroup = subgroup("work", rootGroup, {
 	description: "Client and employer-adjacent proof-of-concepts.",
 });
 
-export const archivedGroup = subgroup("archived", rootGroup, {
-	path: "archived",
-	description: "Repos already archived:true on GitHub. Parked, not maintained.",
-});
-
 // export const forksGroup = subgroup("forks", rootGroup, {
 // 	path: "forks",
 // 	description: "Third-party forks kept for upstream PRs. Every project below keeps its upstream name exactly.",
