@@ -41,10 +41,10 @@ export const dockerWok = projectIn(archivedGroup, "docker-wok", {
 	archived: true,
 });
 
-export const infra = projectIn(archivedGroup, "infra", {
-	visibility: "private",
-	archived: true,
-});
+// export const infra = projectIn(archivedGroup, "infra", {
+// 	visibility: "private",
+// 	archived: true,
+// });
 
 export const linq2dbExample = projectIn(archivedGroup, "linq2db-example", {
 	description: "Demonstrates unexpected behaviour in linq2db",
