@@ -5,6 +5,15 @@ on:
     branches: [main]
   pull_request:
 
+# One group per PR. Restacking force-pushes every branch in a stack at once, so
+# superseded runs for the same PR are cancelled.
+# Pushes to main key on the SHA, giving each commit its own group: merging a
+# stack lands several commits at once and every one of them needs a full run.
+# Serializing them is the pulumi job's business, not this group's.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -23,9 +32,20 @@ jobs:
 
   pulumi:
     runs-on: ubuntu-latest
+    # Only `up` needs the global stack lock. Previews are read-only, so each PR
+    # in a stack gets its own group instead of queueing behind its siblings.
+    #
+    # `queue: max` holds up to 100 pending runs and releases them FIFO. The
+    # default (`single`) keeps only one pending run and cancels it when a newer
+    # one arrives, so merging a stack of N PRs would apply the first and last
+    # commits and silently drop everything between them.
+    #
+    # cancel-in-progress is deliberately absent: pairing it with `queue: max` is
+    # a validation error, and superseded PR runs are already cancelled by the
+    # workflow-level group above.
     concurrency:
-      group: pulumi-prod
-      cancel-in-progress: false
+      group: ${{ github.event_name == 'push' && 'pulumi-prod' || format('pulumi-preview-{0}', github.event.pull_request.number) }}
+      queue: max
     permissions:
       id-token: write
       contents: read
