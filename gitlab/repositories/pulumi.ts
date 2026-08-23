@@ -25,9 +25,9 @@ import { pulumiGroup } from "../groups";
 // });
 
 // Looks superseded by this repo (vcs) — confirm before migrating.
-export const github = projectIn(pulumiGroup, "github", {
-	description: "The parts of my GitHub I manage with IaC",
-});
+// export const github = projectIn(pulumiGroup, "github", {
+// 	description: "The parts of my GitHub I manage with IaC",
+// });
 
 // export const pulumiBun = projectIn(pulumiGroup, "pulumi-bun", {
 // 	description: "Experimental Pulumi support for Bun",

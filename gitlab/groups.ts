@@ -73,10 +73,10 @@ export const librariesGroup = subgroup("libraries", rootGroup, {
 // 	description: "End-user apps and bots with a UI or a Discord presence.",
 // });
 
-export const demosGroup = subgroup("demos", rootGroup, {
-	path: "demos",
-	description: "Conference talks, katas, and one-off learning exercises.",
-});
+// export const demosGroup = subgroup("demos", rootGroup, {
+// 	path: "demos",
+// 	description: "Conference talks, katas, and one-off learning exercises.",
+// });
 
 export const utilitiesGroup = subgroup("utilities", rootGroup, {
 	path: "utilities",
@@ -93,20 +93,20 @@ export const workGroup = subgroup("work", rootGroup, {
 // 	description: "Third-party forks kept for upstream PRs. Every project below keeps its upstream name exactly.",
 // });
 
-export const librariesDotnetGroup = subgroup("libraries-dotnet", librariesGroup, {
-	path: "dotnet",
-	description: "F#/C# packages published to NuGet — names are package IDs, kept as-is.",
-});
+// export const librariesDotnetGroup = subgroup("libraries-dotnet", librariesGroup, {
+// 	path: "dotnet",
+// 	description: "F#/C# packages published to NuGet — names are package IDs, kept as-is.",
+// });
 
 // export const librariesGoGroup = subgroup("libraries-go", librariesGroup, {
 // 	path: "go",
 // 	description: "Standalone Go packages.",
 // });
 
-export const demosImaugGroup = subgroup("demos-imaug", demosGroup, {
-	path: "imaug",
-	description: "IMAUG conference talk repos — renamed now that the group name carries the context.",
-});
+// export const demosImaugGroup = subgroup("demos-imaug", demosGroup, {
+// 	path: "imaug",
+// 	description: "IMAUG conference talk repos — renamed now that the group name carries the context.",
+// });
 
 // export const forksKubernetesGroup = subgroup("forks-kubernetes", forksGroup, {
 // 	path: "kubernetes",

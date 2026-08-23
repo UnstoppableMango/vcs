@@ -1,5 +1,5 @@
 import { projectIn } from "../util";
-import { demosGroup, demosImaugGroup } from "../groups";
+// import { demosGroup, demosImaugGroup } from "../groups";
 
 // export const ansibleOrchard = projectIn(demosGroup, "ansible-orchard", {
 // 	description: "Collection of Ansible playbooks for infrastructure and apps",
@@ -13,9 +13,9 @@ import { demosGroup, demosImaugGroup } from "../groups";
 // 	description: "Proof-of-concept managing a GitHub Enterprise instance with Terraform",
 // });
 
-export const azSwaDemo = projectIn(demosGroup, "az-swa-demo", {
-	description: "Source for the 8/8/23 IMAUG Azure Static Web Apps talk",
-});
+// export const azSwaDemo = projectIn(demosGroup, "az-swa-demo", {
+// 	description: "Source for the 8/8/23 IMAUG Azure Static Web Apps talk",
+// });
 
 // export const adventOfCode = projectIn(demosGroup, "advent-of-code", {
 // 	description: "Advent of Code solutions in various languages",
@@ -25,27 +25,27 @@ export const azSwaDemo = projectIn(demosGroup, "az-swa-demo", {
 // 	description: "Everybody Codes solutions in various languages",
 // });
 
-export const katas = projectIn(demosGroup, "katas", {
-	description: "Sandbox for katas I decide to try",
-});
+// export const katas = projectIn(demosGroup, "katas", {
+// 	description: "Sandbox for katas I decide to try",
+// });
 
-export const haskellSnake = projectIn(demosGroup, "haskell-snake", {
-});
+// export const haskellSnake = projectIn(demosGroup, "haskell-snake", {
+// });
 
 // export const lang = projectIn(demosGroup, "lang", {
 // 	description: "A programming language",
 // });
 
-export const rustOs = projectIn(demosGroup, "rust-os", {
-	description: "Building an operating system in Rust following Philipp Oppermann's blog",
-});
+// export const rustOs = projectIn(demosGroup, "rust-os", {
+// 	description: "Building an operating system in Rust following Philipp Oppermann's blog",
+// });
 
-export const ocMirror = projectIn(demosGroup, "oc-mirror", {
-	description: "Lifecycle manager for internet-disconnected OpenShift environments",
-});
+// export const ocMirror = projectIn(demosGroup, "oc-mirror", {
+// 	description: "Lifecycle manager for internet-disconnected OpenShift environments",
+// });
 
-export const sE3730Tutorial = projectIn(demosGroup, "SE3730_Tutorial", {
-});
+// export const sE3730Tutorial = projectIn(demosGroup, "SE3730_Tutorial", {
+// });
 
 // export const imaug = projectIn(demosImaugGroup, "imaug", {
 // 	description: "Code used in presentations for the Iowa Microsoft Azure User Group",
@@ -57,6 +57,6 @@ export const sE3730Tutorial = projectIn(demosGroup, "SE3730_Tutorial", {
 // 	path: "pulumi",
 // });
 
-export const imaug2022Bicep = projectIn(demosImaugGroup, "imaug-2022-bicep", {
-	path: "bicep-2022",
-});
+// export const imaug2022Bicep = projectIn(demosImaugGroup, "imaug-2022-bicep", {
+// 	path: "bicep-2022",
+// });

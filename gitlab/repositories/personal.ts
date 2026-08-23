@@ -35,6 +35,6 @@ import { personalGroup } from "../groups";
 // 	description: "My adventures wandering the world",
 // });
 
-export const jplNotes = projectIn(personalGroup, "jpl-notes", {
-	visibility: "private",
-});
+// export const jplNotes = projectIn(personalGroup, "jpl-notes", {
+// 	visibility: "private",
+// });

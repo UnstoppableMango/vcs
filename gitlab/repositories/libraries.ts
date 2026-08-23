@@ -1,5 +1,5 @@
 import { projectIn } from "../util";
-import { librariesDotnetGroup } from "../groups";
+// import { librariesDotnetGroup } from "../groups";
 
 // export const cliWrapFSharp = projectIn(librariesDotnetGroup, "CliWrap.FSharp", {
 // 	description: "Idiomatic F# support for CliWrap",
@@ -21,9 +21,9 @@ import { librariesDotnetGroup } from "../groups";
 // 	description: "Micro-framework for CLI apps built on System.CommandLine",
 // });
 
-export const dotnetNfsClient = projectIn(librariesDotnetGroup, "dotnet-nfs-client", {
-	description: "An NFS client implementation written in C#",
-});
+// export const dotnetNfsClient = projectIn(librariesDotnetGroup, "dotnet-nfs-client", {
+// 	description: "An NFS client implementation written in C#",
+// });
 
 // export const godec = projectIn(librariesGoGroup, "godec", {
 // 	description: "Yet another codec library for Go named \"godec\"",

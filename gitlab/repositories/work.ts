@@ -14,6 +14,6 @@ import { workGroup } from "../groups";
 // 	visibility: "private",
 // });
 
-export const saiAma = projectIn(workGroup, "sai-ama", {
-	visibility: "private",
-});
+// export const saiAma = projectIn(workGroup, "sai-ama", {
+// 	visibility: "private",
+// });
