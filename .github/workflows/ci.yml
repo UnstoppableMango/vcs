@@ -95,11 +95,8 @@ jobs:
 
       - run: nix develop -c pulumi stack select prod
 
-      # - if: github.event_name == 'pull_request'
-      #   run: nix develop -c pulumi preview --diff
+      - if: github.event_name == 'pull_request'
+        run: nix develop -c pulumi preview --diff
 
-      # Disabled until the GitHub state is transplanted from the old
-      # UnstoppableMango/github stack. Until then `up` sees the 268 existing
-      # GitHub resources as creates and makes duplicates.
-      # - if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      #   run: nix develop -c pulumi up --yes
+      - if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: nix develop -c pulumi up --refresh --yes
