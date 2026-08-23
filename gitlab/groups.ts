@@ -28,10 +28,10 @@ export const rootGroup = new gitlab.Group("unmango", {
 	visibilityLevel: "public",
 });
 
-export const homelabGroup = subgroup("homelab", rootGroup, {
-	path: "homelab",
-	description: "Physical + cluster infrastructure that keeps THECLUSTER running.",
-});
+// export const homelabGroup = subgroup("homelab", rootGroup, {
+// 	path: "homelab",
+// 	description: "Physical + cluster infrastructure that keeps THECLUSTER running.",
+// });
 
 export const personalGroup = subgroup("personal", rootGroup, {
 	path: "personal",
@@ -43,40 +43,40 @@ export const pulumiGroup = subgroup("pulumi", rootGroup, {
 	description: "Own Pulumi providers, components, and the IaC repos that drive them.",
 });
 
-export const terraformGroup = subgroup("terraform", rootGroup, {
-	path: "terraform",
-	description: "Own Terraform providers. Repo names stay exactly terraform-provider-* — see note in each project.",
-});
+// export const terraformGroup = subgroup("terraform", rootGroup, {
+// 	path: "terraform",
+// 	description: "Own Terraform providers. Repo names stay exactly terraform-provider-* — see note in each project.",
+// });
 
-export const operatorsGroup = subgroup("operators", rootGroup, {
-	path: "operators",
-	description: "Custom Kubernetes controllers/operators for self-hosted services.",
-});
+// export const operatorsGroup = subgroup("operators", rootGroup, {
+// 	path: "operators",
+// 	description: "Custom Kubernetes controllers/operators for self-hosted services.",
+// });
 
-export const uxGroup = subgroup("ux", rootGroup, {
-	path: "ux",
-	description: "The universal codegen framework and its family of source2target converters.",
-});
+// export const uxGroup = subgroup("ux", rootGroup, {
+// 	path: "ux",
+// 	description: "The universal codegen framework and its family of source2target converters.",
+// });
 
 export const librariesGroup = subgroup("libraries", rootGroup, {
 	path: "libraries",
 	description: "Standalone libraries, grouped by ecosystem.",
 });
 
-export const funGroup = subgroup("fun", rootGroup, {
-	path: "fun",
-	description: "Hobby-grade .NET libraries and language experiments.",
-});
+// export const funGroup = subgroup("fun", rootGroup, {
+// 	path: "fun",
+// 	description: "Hobby-grade .NET libraries and language experiments.",
+// });
 
-export const applicationsGroup = subgroup("applications", rootGroup, {
-	path: "applications",
-	description: "End-user apps and bots with a UI or a Discord presence.",
-});
+// export const applicationsGroup = subgroup("applications", rootGroup, {
+// 	path: "applications",
+// 	description: "End-user apps and bots with a UI or a Discord presence.",
+// });
 
-export const demosGroup = subgroup("demos", rootGroup, {
-	path: "demos",
-	description: "Conference talks, katas, and one-off learning exercises.",
-});
+// export const demosGroup = subgroup("demos", rootGroup, {
+// 	path: "demos",
+// 	description: "Conference talks, katas, and one-off learning exercises.",
+// });
 
 export const utilitiesGroup = subgroup("utilities", rootGroup, {
 	path: "utilities",
@@ -88,57 +88,52 @@ export const workGroup = subgroup("work", rootGroup, {
 	description: "Client and employer-adjacent proof-of-concepts.",
 });
 
-export const archivedGroup = subgroup("archived", rootGroup, {
-	path: "archived",
-	description: "Repos already archived:true on GitHub. Parked, not maintained.",
-});
+// export const forksGroup = subgroup("forks", rootGroup, {
+// 	path: "forks",
+// 	description: "Third-party forks kept for upstream PRs. Every project below keeps its upstream name exactly.",
+// });
 
-export const forksGroup = subgroup("forks", rootGroup, {
-	path: "forks",
-	description: "Third-party forks kept for upstream PRs. Every project below keeps its upstream name exactly.",
-});
+// export const librariesDotnetGroup = subgroup("libraries-dotnet", librariesGroup, {
+// 	path: "dotnet",
+// 	description: "F#/C# packages published to NuGet — names are package IDs, kept as-is.",
+// });
 
-export const librariesDotnetGroup = subgroup("libraries-dotnet", librariesGroup, {
-	path: "dotnet",
-	description: "F#/C# packages published to NuGet — names are package IDs, kept as-is.",
-});
+// export const librariesGoGroup = subgroup("libraries-go", librariesGroup, {
+// 	path: "go",
+// 	description: "Standalone Go packages.",
+// });
 
-export const librariesGoGroup = subgroup("libraries-go", librariesGroup, {
-	path: "go",
-	description: "Standalone Go packages.",
-});
+// export const demosImaugGroup = subgroup("demos-imaug", demosGroup, {
+// 	path: "imaug",
+// 	description: "IMAUG conference talk repos — renamed now that the group name carries the context.",
+// });
 
-export const demosImaugGroup = subgroup("demos-imaug", demosGroup, {
-	path: "imaug",
-	description: "IMAUG conference talk repos — renamed now that the group name carries the context.",
-});
+// export const forksKubernetesGroup = subgroup("forks-kubernetes", forksGroup, {
+// 	path: "kubernetes",
+// 	description: "Kubernetes-ecosystem forks.",
+// });
 
-export const forksKubernetesGroup = subgroup("forks-kubernetes", forksGroup, {
-	path: "kubernetes",
-	description: "Kubernetes-ecosystem forks.",
-});
+// export const forksProxmoxGroup = subgroup("forks-proxmox", forksGroup, {
+// 	path: "proxmox",
+// 	description: "k8s-proxmox org forks.",
+// });
 
-export const forksProxmoxGroup = subgroup("forks-proxmox", forksGroup, {
-	path: "proxmox",
-	description: "k8s-proxmox org forks.",
-});
+// export const forksTalosGroup = subgroup("forks-talos", forksGroup, {
+// 	path: "talos",
+// 	description: "Sidero/Talos-ecosystem forks.",
+// });
 
-export const forksTalosGroup = subgroup("forks-talos", forksGroup, {
-	path: "talos",
-	description: "Sidero/Talos-ecosystem forks.",
-});
+// export const forksPulumiGroup = subgroup("forks-pulumi", forksGroup, {
+// 	path: "pulumi",
+// 	description: "Forks of pulumi/* itself — not the original-work pulumi group above.",
+// });
 
-export const forksPulumiGroup = subgroup("forks-pulumi", forksGroup, {
-	path: "pulumi",
-	description: "Forks of pulumi/* itself — not the original-work pulumi group above.",
-});
+// export const forksNixGroup = subgroup("forks-nix", forksGroup, {
+// 	path: "nix",
+// 	description: "Nix ecosystem forks.",
+// });
 
-export const forksNixGroup = subgroup("forks-nix", forksGroup, {
-	path: "nix",
-	description: "Nix ecosystem forks.",
-});
-
-export const forksMiscGroup = subgroup("forks-misc", forksGroup, {
-	path: "misc",
-	description: "Everything else — one fork each of a lot of different worlds.",
-});
+// export const forksMiscGroup = subgroup("forks-misc", forksGroup, {
+// 	path: "misc",
+// 	description: "Everything else — one fork each of a lot of different worlds.",
+// });
