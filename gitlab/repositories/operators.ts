@@ -1,5 +1,5 @@
 import { projectIn } from "../util";
-// import { operatorsGroup } from "../groups";
+import { operatorsGroup } from "../groups";
 
 // export const blockyOperator = projectIn(operatorsGroup, "blocky-operator", {
 // 	description: "An operator for deploying and managing Blocky on Kubernetes",
@@ -40,3 +40,8 @@ import { projectIn } from "../util";
 // 	path: "minecraft",
 // 	archived: true,
 // });
+
+export const clanOperator = projectIn(operatorsGroup, "clan-operator", {
+	description: "An operator for managing clans (clan.lol) from Kubernetes",
+	path: "clan",
+});

@@ -48,10 +48,10 @@ export const pulumiGroup = subgroup("pulumi", rootGroup, {
 // 	description: "Own Terraform providers. Repo names stay exactly terraform-provider-* — see note in each project.",
 // });
 
-// export const operatorsGroup = subgroup("operators", rootGroup, {
-// 	path: "operators",
-// 	description: "Custom Kubernetes controllers/operators for self-hosted services.",
-// });
+export const operatorsGroup = subgroup("operators", rootGroup, {
+	path: "operators",
+	description: "Custom Kubernetes controllers/operators for self-hosted services.",
+});
 
 // export const uxGroup = subgroup("ux", rootGroup, {
 // 	path: "ux",
