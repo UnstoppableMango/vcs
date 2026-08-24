@@ -61,10 +61,11 @@
                 pulumi-bun
               ])
               ++ [
-                # pulumi-resource-git on PATH: pulumi prefers an ambient plugin
-                # over the download its pluginDownloadURL points at, which is a
-                # release the provider repo doesn't have.
-                gitProvider.default
+                # The plugin itself is not here: since v0.0.2 the SDK's
+                # pluginDownloadURL resolves to a real GitHub release, so pulumi
+                # downloads pulumi-resource-git on its own. Adding
+                # `gitProvider.default` back would shadow that with an ambient
+                # PATH plugin, which pulumi prefers over the download.
                 vendorGitSdk
               ];
 

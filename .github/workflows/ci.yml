@@ -100,8 +100,16 @@ jobs:
 
       - run: nix develop -c pulumi stack select prod
 
+      # pulumi-resource-git is no longer an ambient PATH plugin, so pulumi
+      # downloads it from the provider repo's GitHub releases. That path goes
+      # through api.github.com, whose unauthenticated rate limit is shared
+      # across the runner fleet, so hand it a token.
       - if: github.event_name == 'pull_request'
         run: nix develop -c pulumi preview --diff
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
       - if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: nix develop -c pulumi up --refresh --yes
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

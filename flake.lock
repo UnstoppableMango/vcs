@@ -91,11 +91,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1787534900,
-        "narHash": "sha256-5DNdsTxZgTI2jAN3mFGt1Deh0LSe3eNMdiMFQ8MC3LU=",
+        "lastModified": 1787538774,
+        "narHash": "sha256-gLkcvYV//4wj2bsX7OIbDYWZmonX/Es1c+ZQOxg6j1g=",
         "owner": "UnstoppableMango",
         "repo": "pulumi-provider-git",
-        "rev": "36bab2473ff279fbf3fcf98c62797a06482d1a5f",
+        "rev": "f09f7ee4322334490fe78fb18f745df1795a3757",
         "type": "github"
       },
       "original": {
