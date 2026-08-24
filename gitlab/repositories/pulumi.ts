@@ -1,10 +1,10 @@
 import { projectIn } from "../util";
 import { pulumiGroup } from "../groups";
 
-// // This repo.
-// export const vcs = projectIn(pulumiGroup, "vcs", {
-// 	description: "Version control infrastructure as code",
-// });
+// This repo.
+export const vcs = projectIn(pulumiGroup, "vcs", {
+	description: "Version control infrastructure as code",
+});
 
 // export const pulumiCiMgmt = projectIn(pulumiGroup, "pulumi-ci-mgmt", {
 // 	description: "CI automation for Pulumi providers based on pulumi/ci-mgmt",
