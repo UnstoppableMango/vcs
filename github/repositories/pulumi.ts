@@ -2,7 +2,8 @@ import * as gh from "@pulumi/github";
 import { integrationIds, PublicRepo } from "pulumi-components";
 
 export const vcs = new PublicRepo("vcs", {
-	description: "Version control infrastructure as code",
+	description:
+		"Version control infrastructure as code. Moved to gitlab.com/unmango/pulumi/vcs",
 	topics: ["iac", "vcs", "github", "gitlab", "git", "pulumi"],
 	requiredChecks: [
 		{ context: "check", integrationId: integrationIds.github },
