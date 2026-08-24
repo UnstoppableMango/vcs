@@ -10,9 +10,10 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
 
-    # Deliberately not following our nixpkgs: the provider pins vendorHash,
-    # npmDepsHash and nix/dotnet-deps.json against its own.
-    pulumi-provider-git.url = "github:UnstoppableMango/pulumi-provider-git";
+    pulumi-provider-git = {
+      url = "github:UnstoppableMango/pulumi-provider-git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
@@ -32,9 +33,10 @@
           gitProvider = inputs.pulumi-provider-git.packages.${system};
 
           # `@unmango/pulumi-git` isn't published to npm, so the nix-built SDK is
-          # placed into node_modules by hand. The bundled node_modules is
-          # dropped: it carries a second @pulumi/pulumi, and two copies of the
-          # Pulumi runtime in one process don't share its module-level state.
+          # placed into node_modules by hand. Copied, not symlinked: the SDK
+          # declares @pulumi/pulumi as a dependency but doesn't ship it, and
+          # node and bun both resolve from a symlink's realpath, so a symlinked
+          # SDK would search upward from /nix/store and never find our copy.
           vendorGitSdk = pkgs.writeShellScriptBin "vendor-git-sdk" ''
             set -euo pipefail
             rm -rf node_modules/@unmango/pulumi-git
@@ -42,7 +44,6 @@
             cp -rL --no-preserve=mode,ownership \
               ${gitProvider.sdk-nodejs}/lib/node_modules/@unmango/pulumi-git \
               node_modules/@unmango/pulumi-git
-            rm -rf node_modules/@unmango/pulumi-git/node_modules
           '';
         in
         {

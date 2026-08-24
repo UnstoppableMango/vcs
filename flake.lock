@@ -79,36 +79,23 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1787360063,
-        "narHash": "sha256-dt4WdcvsA8/RCe+VZZwqU0X+XMM3wBbGCWA0/sFWzGo=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "2c423e03bbafcff28bfadc6781a4a8257f205cb5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "pulumi-provider-git": {
       "inputs": {
         "flake-parts": "flake-parts_2",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
         "pulumi2nix": "pulumi2nix",
+        "sops-nix": "sops-nix",
         "systems": "systems_2",
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1787504217,
-        "narHash": "sha256-bRkqeMpq8dQ7gyVSc/mPMWkH+9Bexyb7SQHBu1RDoyU=",
+        "lastModified": 1787532107,
+        "narHash": "sha256-kRs+Hi/4u9maD2ytedFCgzAxroUaR3jOEJj4VKyIOgk=",
         "owner": "UnstoppableMango",
         "repo": "pulumi-provider-git",
-        "rev": "f9140aa7ea7b655d3da9214b195a398a3e56581c",
+        "rev": "b7b14f177211887c5fe3d56dc6b79c88e5e7c735",
         "type": "github"
       },
       "original": {
@@ -128,11 +115,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1787451339,
-        "narHash": "sha256-QJtiQGaQqBTcOHoRFoHWJQaeZNG+k44ZZpuLjaiVVfs=",
+        "lastModified": 1787523577,
+        "narHash": "sha256-cswzKVk9S6iheefYpG/UpJTWAF8/SwHkO49xTCJ87dM=",
         "owner": "UnstoppableMango",
         "repo": "pulumi2nix",
-        "rev": "6fa92939e3c738f316cf019328a36b18e6e96c9d",
+        "rev": "93f5d5b5c8da3ccfd4f0fcab6aa6fde7a622bb8b",
         "type": "github"
       },
       "original": {
@@ -148,6 +135,27 @@
         "pulumi-provider-git": "pulumi-provider-git",
         "systems": "systems_3",
         "treefmt-nix": "treefmt-nix_3"
+      }
+    },
+    "sops-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "pulumi-provider-git",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1786629091,
+        "narHash": "sha256-gkig4nPi1CWc4Z50GBsjE4ygSE7hMpl/TwID2an2Cck=",
+        "owner": "Mic92",
+        "repo": "sops-nix",
+        "rev": "a8627b21b9107c5711c96b84f32a9a4b3d45295f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Mic92",
+        "repo": "sops-nix",
+        "type": "github"
       }
     },
     "systems": {
