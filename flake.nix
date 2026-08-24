@@ -10,9 +10,28 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
 
+    # The `follows` blocks on this input and on `pulumipkgs` below exist only to
+    # collapse duplicate lock entries. Both flakes, and the `pulumi2nix` each of
+    # them pulls in, declare their own `flake-parts`, `systems` and
+    # `treefmt-nix`; unfollowed, that is five copies of each in `flake.lock`.
+    # Every one of those copies already resolved to the same revision, so
+    # collapsing them changes no derivation (verified: the devShell drvPath is
+    # unchanged). They are build tooling for those flakes' own checks and
+    # formatters, which nothing here evaluates.
+    #
+    # `pulumi2nix` itself is deliberately left alone. The two are pinned to
+    # different revisions, and it is the library that actually builds the
+    # providers, so forcing one revision on the flake that didn't choose it
+    # would rebuild its packages against a builder it was never tested with.
     pulumi-provider-git = {
       url = "github:UnstoppableMango/pulumi-provider-git";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+      inputs.systems.follows = "systems";
+      inputs.treefmt-nix.follows = "treefmt-nix";
+      inputs.pulumi2nix.inputs.flake-parts.follows = "flake-parts";
+      inputs.pulumi2nix.inputs.systems.follows = "systems";
+      inputs.pulumi2nix.inputs.treefmt-nix.follows = "treefmt-nix";
     };
 
     # `github` and `gitlab` plugins, built with pulumi2nix and tracked against
@@ -30,6 +49,12 @@
     pulumipkgs = {
       url = "github:unmango/pulumipkgs";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+      inputs.systems.follows = "systems";
+      inputs.treefmt-nix.follows = "treefmt-nix";
+      inputs.pulumi2nix.inputs.flake-parts.follows = "flake-parts";
+      inputs.pulumi2nix.inputs.systems.follows = "systems";
+      inputs.pulumi2nix.inputs.treefmt-nix.follows = "treefmt-nix";
     };
 
     treefmt-nix = {
