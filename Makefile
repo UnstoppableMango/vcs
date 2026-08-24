@@ -14,3 +14,7 @@ format fmt:
 # prune it, since it isn't a package.json dependency.
 sdk:
 	nix develop -c vendor-git-sdk
+
+# Verify the PATH plugins match the versions the SDKs in node_modules ask for.
+plugins:
+	nix develop -c check-pulumi-plugins
