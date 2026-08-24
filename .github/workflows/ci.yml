@@ -24,9 +24,13 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
+      # `unmango` is where the github and gitlab provider plugins come from.
+      # Without it every run rebuilds both from source, which is a long Go
+      # build each.
       - uses: cachix/cachix-action@5f2d7c5294214f71b873db4b969586b980625e71 # v17
         with:
           name: unstoppablemango
+          extraPullNames: unmango
 
       - run: nix flake check
 
@@ -59,6 +63,7 @@ jobs:
       - uses: cachix/cachix-action@5f2d7c5294214f71b873db4b969586b980625e71 # v17
         with:
           name: unstoppablemango
+          extraPullNames: unmango
 
       - uses: azure/login@f5d393ae46f8fde4be8b75f32e3fc50e654ad0ca # v3.0.1
         with:
@@ -98,18 +103,14 @@ jobs:
       # Re-place it after the install rather than before.
       - run: nix develop -c vendor-git-sdk
 
+      # Every plugin is on PATH from nix, so a version the SDKs no longer ask
+      # for would be used silently. Fail before touching the backend.
+      - run: nix develop -c check-pulumi-plugins
+
       - run: nix develop -c pulumi stack select prod
 
-      # pulumi-resource-git is no longer an ambient PATH plugin, so pulumi
-      # downloads it from the provider repo's GitHub releases. That path goes
-      # through api.github.com, whose unauthenticated rate limit is shared
-      # across the runner fleet, so hand it a token.
       - if: github.event_name == 'pull_request'
         run: nix develop -c pulumi preview --diff
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
 
       - if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: nix develop -c pulumi up --refresh --yes
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
