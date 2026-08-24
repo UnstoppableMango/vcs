@@ -65,11 +65,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1787001381,
-        "narHash": "sha256-Ue1Yo8gfHdD4TMtNewhA4tkSYeFqXThju0nCyJc3ALo=",
+        "lastModified": 1787360063,
+        "narHash": "sha256-dt4WdcvsA8/RCe+VZZwqU0X+XMM3wBbGCWA0/sFWzGo=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "ec2d622de0773551768cf98f3fc50cbcc003b9c5",
+        "rev": "2c423e03bbafcff28bfadc6781a4a8257f205cb5",
         "type": "github"
       },
       "original": {
@@ -91,11 +91,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1787532107,
-        "narHash": "sha256-kRs+Hi/4u9maD2ytedFCgzAxroUaR3jOEJj4VKyIOgk=",
+        "lastModified": 1787534900,
+        "narHash": "sha256-5DNdsTxZgTI2jAN3mFGt1Deh0LSe3eNMdiMFQ8MC3LU=",
         "owner": "UnstoppableMango",
         "repo": "pulumi-provider-git",
-        "rev": "b7b14f177211887c5fe3d56dc6b79c88e5e7c735",
+        "rev": "36bab2473ff279fbf3fcf98c62797a06482d1a5f",
         "type": "github"
       },
       "original": {
