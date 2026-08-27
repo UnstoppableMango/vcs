@@ -1,0 +1,87 @@
+variables:
+  NIX_CONFIG: "experimental-features = nix-command flakes"
+
+default:
+  image: nixos/nix:2.32.2
+
+.cachix:
+  script: &cachix
+    # `unmango` is where the github and gitlab provider plugins come from.
+    # Without it every run rebuilds both from source, which is a long Go build
+    # each.
+    - nix profile install nixpkgs#cachix
+    - cachix use unstoppablemango
+    - cachix use unmango
+
+.pulumi-setup:
+  script: &pulumi-setup
+    - nix profile install nixpkgs#azure-cli nixpkgs#jq
+    - az login --service-principal -u "$AZURE_CLIENT_ID" -t "$AZURE_TENANT_ID" --federated-token "$AZURE_ID_TOKEN"
+    - az account set --subscription "$AZURE_SUBSCRIPTION_ID"
+    - |
+      get() {
+        az keyvault secret show \
+          --vault-name unstoppablemango-pulumi \
+          --name "$1" \
+          --query value -o tsv
+      }
+
+      export PULUMI_CONFIG_PASSPHRASE=$(get vcs-pulumi-passphrase)
+      export AWS_ACCESS_KEY_ID=$(get vcs-state-bucket-key-id)
+      export AWS_SECRET_ACCESS_KEY=$(get vcs-state-bucket-key)
+    - nix develop -c bun install --frozen-lockfile
+    # `@unmango/pulumi-git` isn't a package.json dependency (it's unpublished,
+    # so bun can't resolve it), which leaves `bun install` free to prune it.
+    # Re-place it after the install rather than before.
+    - nix develop -c vendor-git-sdk
+    # Every plugin is on PATH from nix, so a version the SDKs no longer ask
+    # for would be used silently. Fail before touching the backend.
+    - nix develop -c check-pulumi-plugins
+    - nix develop -c pulumi stack select prod
+
+stages:
+  - check
+  - deploy
+
+check:
+  stage: check
+  interruptible: true
+  before_script: *cachix
+  script:
+    - nix flake check
+
+pulumi:preview:
+  stage: deploy
+  before_script: *cachix
+  id_tokens:
+    AZURE_ID_TOKEN:
+      aud: api://AzureADTokenExchange
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  # Previews are read-only, so each MR gets its own resource group instead of
+  # queueing behind its siblings. Superseded runs for the same MR are
+  # cancelled via "auto-cancel redundant pipelines" (project CI/CD settings),
+  # which `interruptible` opts this job into.
+  resource_group: "pulumi-preview-$CI_MERGE_REQUEST_IID"
+  interruptible: true
+  script:
+    - *pulumi-setup
+    - nix develop -c pulumi preview --diff
+
+pulumi:deploy:
+  stage: deploy
+  before_script: *cachix
+  id_tokens:
+    AZURE_ID_TOKEN:
+      aud: api://AzureADTokenExchange
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
+  # Only `up` needs the global stack lock. Set this resource group's process
+  # mode to "oldest_first" via the API (not configurable in this file), so
+  # pending runs queue FIFO instead of the default, which would let a newer
+  # commit skip the queue and apply out of order. Merging a stack of N MRs
+  # then applies every commit instead of racing to apply only the latest.
+  resource_group: pulumi-prod
+  script:
+    - *pulumi-setup
+    - nix develop -c pulumi up --refresh --yes

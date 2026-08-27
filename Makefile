@@ -4,8 +4,14 @@ build:
 update:
 	nix flake update
 
-check lint:
+check:
 	nix flake check
+
+# `check` alone is hermetic and network-less. `glab ci lint` isn't: it calls
+# GitLab's live CI Lint API, so it runs as an impure app instead of a flake
+# check.
+lint: check
+	nix run .#glab-ci-lint
 
 format fmt:
 	nix fmt

@@ -145,21 +145,30 @@
             overlays = [ inputs.pulumipkgs.overlays.default ];
           };
 
+          # Not a `checks` entry: `glab ci lint` calls GitLab's live CI Lint
+          # API over the network with your `glab` auth token, so it can't run
+          # inside `nix flake check`'s sandboxed, network-less build. Run it
+          # on the host instead: `nix run .#glab-ci-lint`.
+          apps.glab-ci-lint = {
+            type = "app";
+            program = "${
+              pkgs.writeShellApplication {
+                name = "glab-ci-lint";
+                runtimeInputs = [ pkgs.glab ];
+                text = ''glab ci lint "$@"'';
+              }
+            }/bin/glab-ci-lint";
+          };
+
           devShells.default = pkgs.mkShellNoCC {
             packages =
-              with pkgs;
-              [
+              (with pkgs; [
                 glab
                 bun
                 gnumake
                 nixfmt
                 pulumi
-              ]
-              # Every resource plugin this stack needs, pinned by flake.lock and
-              # found on PATH. Pulumi prefers an ambient plugin over both its
-              # pluginDownloadURL and ~/.pulumi/plugins, so nothing is
-              # downloaded at run time; the `using ... from $PATH` warnings it
-              # logs for each one are the mechanism working, not a problem.
+              ])
               ++ (with pkgs.pulumiPackages; [
                 pulumi-bun
                 github

@@ -6,6 +6,8 @@ export interface ProjectArgs {
 	path?: string;
 	visibility?: "public" | "private";
 	archived?: boolean;
+	/** Fields included in the sub claim of the CI ID token. Defaults to the provider default (project_path, ref_type, ref). */
+	ciIdTokenSubClaimComponents?: Input<Input<string>[]>;
 }
 
 export function projectIn(
@@ -21,6 +23,7 @@ export function projectIn(
 		description: args.description,
 		visibilityLevel: args.visibility ?? "public",
 		archived: args.archived,
+		ciIdTokenSubClaimComponents: args.ciIdTokenSubClaimComponents,
 	}, { parent: group });
 }
 

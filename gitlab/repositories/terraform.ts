@@ -1,5 +1,5 @@
 import { projectIn } from "../util";
-// import { terraformGroup } from "../groups";
+import { terraformGroup } from "../groups";
 
 // // Registry-locked name, do not shorten.
 // export const terraformProviderGit = projectIn(terraformGroup, "terraform-provider-git", {
@@ -15,3 +15,8 @@ import { projectIn } from "../util";
 // export const terraformProviderSmallImprovements = projectIn(terraformGroup, "terraform-provider-small-improvements", {
 // 	description: "Terraform provider for Small Improvements",
 // });
+
+// Registry-locked name, do not shorten.
+export const terraformProviderNetGear = projectIn(terraformGroup, "terraform-provider-netgear", {
+    description: "Terraform provider for (some) NetGear devices",
+});

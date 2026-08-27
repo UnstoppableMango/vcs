@@ -30,11 +30,6 @@ import { operatorsGroup } from "../groups";
 // 	description: "A re-implementation of sealed-secrets for experimentation and proof of concept",
 // });
 
-// // "Controller", not "operator", on purpose: sandbox, not the real thing.
-// export const blockyController = projectIn(operatorsGroup, "blocky-controller", {
-// 	description: "Blocky kubernetes controller sandbox",
-// });
-
 // export const minecraftOperator = projectIn(operatorsGroup, "minecraft-operator", {
 // 	description: "An operator for managing minecraft servers on Kubernetes",
 // 	path: "minecraft",

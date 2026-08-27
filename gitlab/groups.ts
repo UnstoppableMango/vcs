@@ -43,10 +43,10 @@ export const pulumiGroup = subgroup("pulumi", rootGroup, {
 	description: "Own Pulumi providers, components, and the IaC repos that drive them.",
 });
 
-// export const terraformGroup = subgroup("terraform", rootGroup, {
-// 	path: "terraform",
-// 	description: "Own Terraform providers. Repo names stay exactly terraform-provider-* — see note in each project.",
-// });
+export const terraformGroup = subgroup("terraform", rootGroup, {
+	path: "terraform",
+	description: "Terraform providers.",
+});
 
 export const operatorsGroup = subgroup("operators", rootGroup, {
 	path: "operators",

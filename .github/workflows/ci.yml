@@ -4,113 +4,21 @@ on:
   push:
     branches: [main]
   pull_request:
-
-# One group per PR. Restacking force-pushes every branch in a stack at once, so
-# superseded runs for the same PR are cancelled.
-# Pushes to main key on the SHA, giving each commit its own group: merging a
-# stack lands several commits at once and every one of them needs a full run.
-# Serializing them is the pulumi job's business, not this group's.
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    branches: [main]
 
 jobs:
-  check:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
-      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
+      - uses: cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3 # v31.10.6
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
-      # `unmango` is where the github and gitlab provider plugins come from.
-      # Without it every run rebuilds both from source, which is a long Go
-      # build each.
       - uses: cachix/cachix-action@5f2d7c5294214f71b873db4b969586b980625e71 # v17
         with:
           name: unstoppablemango
-          extraPullNames: unmango
 
       - run: nix flake check
-
-  pulumi:
-    runs-on: ubuntu-latest
-    # Only `up` needs the global stack lock. Previews are read-only, so each PR
-    # in a stack gets its own group instead of queueing behind its siblings.
-    #
-    # `queue: max` holds up to 100 pending runs and releases them FIFO. The
-    # default (`single`) keeps only one pending run and cancels it when a newer
-    # one arrives, so merging a stack of N PRs would apply the first and last
-    # commits and silently drop everything between them.
-    #
-    # cancel-in-progress is deliberately absent: pairing it with `queue: max` is
-    # a validation error, and superseded PR runs are already cancelled by the
-    # workflow-level group above.
-    concurrency:
-      group: ${{ github.event_name == 'push' && 'pulumi-prod' || format('pulumi-preview-{0}', github.event.pull_request.number) }}
-      queue: max
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
-        with:
-          github_access_token: ${{ github.token }}
-
-      - uses: cachix/cachix-action@5f2d7c5294214f71b873db4b969586b980625e71 # v17
-        with:
-          name: unstoppablemango
-          extraPullNames: unmango
-
-      - uses: azure/login@f5d393ae46f8fde4be8b75f32e3fc50e654ad0ca # v3.0.1
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Read secrets from Key Vault
-        uses: azure/cli@9eb25b8360668fb0ecbafa808d40e2197b2f5f52 # v3.0.0
-        with:
-          inlineScript: |
-            get() {
-              az keyvault secret show \
-                --vault-name unstoppablemango-pulumi \
-                --name "$1" \
-                --query value -o tsv
-            }
-
-            passphrase=$(get vcs-pulumi-passphrase)
-            access_key_id=$(get vcs-state-bucket-key-id)
-            secret_access_key=$(get vcs-state-bucket-key)
-
-            echo "::add-mask::$passphrase"
-            echo "::add-mask::$access_key_id"
-            echo "::add-mask::$secret_access_key"
-
-            {
-              echo "PULUMI_CONFIG_PASSPHRASE=$passphrase"
-              echo "AWS_ACCESS_KEY_ID=$access_key_id"
-              echo "AWS_SECRET_ACCESS_KEY=$secret_access_key"
-            } >> "$GITHUB_ENV"
-
-      - run: nix develop -c bun install --frozen-lockfile
-
-      # `@unmango/pulumi-git` isn't a package.json dependency (it's unpublished,
-      # so bun can't resolve it), which leaves `bun install` free to prune it.
-      # Re-place it after the install rather than before.
-      - run: nix develop -c vendor-git-sdk
-
-      # Every plugin is on PATH from nix, so a version the SDKs no longer ask
-      # for would be used silently. Fail before touching the backend.
-      - run: nix develop -c check-pulumi-plugins
-
-      - run: nix develop -c pulumi stack select prod
-
-      - if: github.event_name == 'pull_request'
-        run: nix develop -c pulumi preview --diff
-
-      - if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: nix develop -c pulumi up --refresh --yes
+      - run: nix build .#
