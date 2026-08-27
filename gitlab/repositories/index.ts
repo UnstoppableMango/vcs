@@ -7,6 +7,7 @@ export * from "./libraries";
 export * from "./operators";
 export * from "./personal";
 export * from "./pulumi";
+export * from "./root";
 export * from "./terraform";
 export * from "./utilities";
 export * from "./ux";
