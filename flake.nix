@@ -149,6 +149,7 @@
             packages =
               with pkgs;
               [
+                azure-cli
                 glab
                 bun
                 gnumake
