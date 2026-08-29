@@ -1,6 +1,6 @@
 ---
 name: add-repo
-description: Add a repository resource to this Pulumi VCS project. Use when asked to add, register, onboard, or import a repo or project into gitlab/repositories or github/repositories, or when the user says "add <name> to vcs". Requires a repository name.
+description: Add a repository resource to this Pulumi VCS project. Use when asked to add, register, onboard, or import a repo or project into gitlab/ or github/repositories, or when the user says "add <name> to vcs". Requires a repository name.
 ---
 
 # Add a repository resource
@@ -56,7 +56,7 @@ A hit means the project exists and must be imported; its `.id` is the import ID.
 | path | Name with the redundant category prefix or suffix stripped. Full name for registry-locked names. Omit the field when it equals the name. |
 | visibility | `gh` `.visibility` lowercased, else `public` |
 | archived | `gh` `.isArchived`. Omit the field when false. |
-| ciIdTokenSubClaimComponents | Omit. Recommend it only for a project whose CI federates into the Pulumi backend, as in `gitlab/repositories/pulumi.ts`. |
+| ciIdTokenSubClaimComponents | Omit. Recommend it only for a project whose CI federates into the Pulumi backend, as in `gitlab/unmango/pulumi/index.ts`. |
 | topics (GitHub) | `gh` `.repositoryTopics` |
 | requiredChecks (GitHub) | Contexts from the queries above, emitted as `{ context, integrationId: integrationIds.github }` |
 | template (GitHub) | `gh` `.templateRepository` |
@@ -85,7 +85,10 @@ Skip a question whose answer is already unambiguous and say which default was ta
 
 ## Step 3. Write the GitLab entry
 
-Append to `gitlab/repositories/<category>.ts`, below the commented-out backlog block, matching the file's style: tabs, double quotes, trailing commas.
+`gitlab/` mirrors the group tree: one directory per group at its GitLab path, `group.ts` declaring the group and `index.ts` declaring the projects in it.
+So `unmango/operators/clan` is `gitlab/unmango/operators/index.ts`.
+
+Append to that group's `index.ts`, below the commented-out backlog block, matching the file's style: tabs, double quotes, trailing commas.
 
 ```ts
 export const clanOperator = projectIn(operatorsGroup, "clan-operator", {
@@ -96,13 +99,14 @@ export const clanOperator = projectIn(operatorsGroup, "clan-operator", {
 
 The exported const is camelCase of the resource name, disambiguated where the bare name would collide (`terraformProviderNetGear`, `pulumiProviderGit`).
 
-Ensure `import { projectIn } from "../util";` and `import { <x>Group } from "../groups";` are present and uncommented.
+Ensure `import { projectIn } from "../../util";` and `import { <x>Group } from "./group";` are present and uncommented.
 
-If the group export is commented out in `gitlab/groups.ts`, uncomment it and every ancestor group, then say so explicitly in the summary.
+If the group is commented out, uncomment it and every ancestor group, then say so explicitly in the summary.
+That means its `group.ts`, its `index.ts`, and the `export * as <group> from "./<group>"` line in the parent's `index.ts`.
 A commented group cannot be referenced and the file will not typecheck otherwise.
 
-`gitlab/repositories/index.ts` already re-exports every category file.
-Touch it only when creating a genuinely new category file, in which case add the matching `export *` to both `gitlab/repositories/index.ts` and `github/repositories/index.ts`.
+A genuinely new group is a new directory with `group.ts` and `index.ts`, plus a namespace re-export in the parent's `index.ts`.
+On the GitHub side, a new category file also needs an `export *` in `github/repositories/index.ts`.
 
 ## Step 4. Write the GitHub entry, if requested
 
