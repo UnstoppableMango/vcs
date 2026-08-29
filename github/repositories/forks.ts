@@ -58,20 +58,6 @@ export const piholeKubernetes = new Fork("pihole-kubernetes", {
 	},
 });
 
-export const accountManagementAutomation = new Fork(
-	"account-management-automation",
-	{
-		sourceOwner: "sourceallies",
-		sourceRepo: "account-management-automation",
-		repository: {
-			description: "Github for Account Management Automation Hydra Project",
-			hasProjects: false,
-			hasWiki: false,
-			visibility: "private",
-		},
-	},
-);
-
 export const azureFunctionsNodejsLibrary = new Fork(
 	"azure-functions-nodejs-library",
 	{
