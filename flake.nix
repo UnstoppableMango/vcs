@@ -163,6 +163,7 @@
           devShells.default = pkgs.mkShellNoCC {
             packages =
               (with pkgs; [
+                azure-cli
                 glab
                 bun
                 gnumake
