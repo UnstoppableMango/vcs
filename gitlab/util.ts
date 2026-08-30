@@ -3,7 +3,7 @@ import type { Input } from "@pulumi/pulumi";
 
 export interface ProjectArgs {
 	description?: Input<string>;
-	/** Display name within the group. Defaults to the Pulumi resource name. */
+	/** Display name within the group. Defaults to `path`, or the Pulumi resource name. */
 	name?: string;
 	path?: string;
 	visibility?: "public" | "private";
@@ -17,7 +17,7 @@ export function projectIn(
 	resourceName: string,
 	args: ProjectArgs = {},
 ) {
-	const name = args.name ?? resourceName;
+	const name = args.name ?? args.path ?? resourceName;
 	const path = args.path ?? name;
 	return new gitlab.Project(resourceName, {
 		name,
