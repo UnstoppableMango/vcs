@@ -36,7 +36,6 @@ export * as goreleaser from "./goreleaser";
 export * as gossamer from "./gossamer";
 // export * as homelab from "./homelab";
 export * as libraries from "./libraries";
-export * as nix from "./nix";
 export * as openapi from "./openapi";
 export * as operators from "./operators";
 export * as personal from "./personal";
