@@ -42,7 +42,6 @@ export * as operators from "./operators";
 export * as personal from "./personal";
 export * as pulumi from "./pulumi";
 export * as sql from "./sql";
-export * as terraform from "./terraform";
 export * as utilities from "./utilities";
 // export * as ux from "./ux";
 export * as work from "./work";
