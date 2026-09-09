@@ -144,14 +144,33 @@ State which case applies before finishing.
 Resource does not exist on the platform: `pulumi up` creates it, nothing more to do.
 
 Resource already exists: it must be imported first, or `pulumi up` fails on a name conflict.
-Print the command, do not run it:
+The command depends on where the resource sits in the URN tree, so pick the matching one below.
+Print it, do not run it.
+
+A raw `gh.Repository` is a root-level resource, which is why an already-existing GitHub repo is normally declared that way rather than through a component.
+It also gets `{ protect: true }`, matching the rest of `github/repositories/`.
 
 ```sh
 pulumi import github:index/repository:Repository <resourceName> <repoName>
-pulumi import gitlab:index/project:Project <resourceName> <projectId>
 ```
 
-An existing GitHub repo brought in as a raw resource also gets `{ protect: true }`, matching the rest of `github/repositories/`.
+`PublicRepo`, `PrivateRepo`, and `Fork` create their `gh.Repository` as a child of the component, so the root command above would import a URN that never matches.
+The pinned `pulumi-components` exposes no adoption option on the child, so either declare the repo raw as above, or name the component as the parent:
+
+```sh
+pulumi import github:index/repository:Repository <resourceName> <repoName> \
+  --parent '<resourceName>=urn:pulumi:prod::vcs::unmango:github:PublicRepo::<resourceName>'
+```
+
+`projectIn` parents each GitLab project on its group, and groups nest, so a project import needs the group URN:
+
+```sh
+pulumi import gitlab:index/project:Project <resourceName> <projectId> \
+  --parent '<groupName>=urn:pulumi:prod::vcs::gitlab:index/group:Group$gitlab:index/group:Group::<groupName>'
+```
+
+Read the parent URN off `pulumi stack export` rather than assembling it by hand.
+The `Group` segments repeat once per level of nesting, which tracks the directory depth under `gitlab/`.
 
 ## Step 6. Verify and report
 
