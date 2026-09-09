@@ -105,3 +105,8 @@ export const pulumiBun = new PublicRepo("pulumi-bun", {
 export const wireguardCni = new PublicRepo("wireguard-cni", {
 	description: "Wireguard CNI plugin",
 });
+
+export const zettelkasten = new PublicRepo("zettelkasten", {
+	description: "A software implementation of zettelkasten, tailored to me",
+	topics: ["zettelkasten", "notes", "knowledge-management", "markdown"],
+});
