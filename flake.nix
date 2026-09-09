@@ -145,25 +145,11 @@
             overlays = [ inputs.pulumipkgs.overlays.default ];
           };
 
-          # Not a `checks` entry: `glab ci lint` calls GitLab's live CI Lint
-          # API over the network with your `glab` auth token, so it can't run
-          # inside `nix flake check`'s sandboxed, network-less build. Run it
-          # on the host instead: `nix run .#glab-ci-lint`.
-          apps.glab-ci-lint = {
-            type = "app";
-            program = "${
-              pkgs.writeShellApplication {
-                name = "glab-ci-lint";
-                runtimeInputs = [ pkgs.glab ];
-                text = ''glab ci lint "$@"'';
-              }
-            }/bin/glab-ci-lint";
-          };
-
           devShells.default = pkgs.mkShellNoCC {
             packages =
               (with pkgs; [
                 azure-cli
+                gh
                 glab
                 bun
                 gnumake
