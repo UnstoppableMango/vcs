@@ -32,12 +32,7 @@ new PublicRepo("everybody-codes", {
 
 new PublicRepo("lang", {
 	description: "A programming language",
-	requiredChecks: [
-		{
-			context: "Build and Test",
-			integrationId: integrationIds.github,
-		},
-	],
+	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
 });
 
 new gh.Repository(
