@@ -1,3 +1,6 @@
+up:
+	pulumi up
+
 build:
 	nix build .#
 
