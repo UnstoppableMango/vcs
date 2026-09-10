@@ -90,8 +90,9 @@
 
           # A plugin on PATH is version-blind: pulumi runs whichever binary it
           # finds and never checks it against the version the SDK asks for, so a
-          # `bun.lock` bump that flake.lock hasn't followed would silently keep
-          # running the old provider. Compare the two pins directly instead.
+          # bump to either lock that the other hasn't followed would silently
+          # run a provider the SDK wasn't built against. Compare the two pins
+          # directly instead.
           #
           # The nix side is interpolated at build time, so this script is only
           # ever right about the shell it was built for.
@@ -120,7 +121,7 @@
                   echo "$plugin: SDK $sdk != PATH plugin $pinned"
                   case "$plugin" in
                     git) echo "  the vendored SDK is stale. Run \`vendor-git-sdk\`." ;;
-                    *)   echo "  bun.lock moved but flake.lock did not. Run \`nix flake update pulumipkgs\`." ;;
+                    *)   echo "  the two pins have drifted. Run \`bun add @pulumi/$plugin@$pinned\` to follow the plugin, or \`nix flake update pulumipkgs\` to follow the SDK." ;;
                   esac
                   status=1
                 fi
