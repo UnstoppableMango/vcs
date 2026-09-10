@@ -12,6 +12,6 @@
         "pulumi-components": "github:UnstoppableMango/pulumi-components"
     },
     "peerDependencies": {
-        "typescript": "^5"
+        "typescript": "^5 || ^7.0.0"
     }
 }
