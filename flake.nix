@@ -10,19 +10,6 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
 
-    # The `follows` blocks on this input and on `pulumipkgs` below exist only to
-    # collapse duplicate lock entries. Both flakes, and the `pulumi2nix` each of
-    # them pulls in, declare their own `flake-parts`, `systems` and
-    # `treefmt-nix`; unfollowed, that is five copies of each in `flake.lock`.
-    # Every one of those copies already resolved to the same revision, so
-    # collapsing them changes no derivation (verified: the devShell drvPath is
-    # unchanged). They are build tooling for those flakes' own checks and
-    # formatters, which nothing here evaluates.
-    #
-    # `pulumi2nix` itself is deliberately left alone. The two are pinned to
-    # different revisions, and it is the library that actually builds the
-    # providers, so forcing one revision on the flake that didn't choose it
-    # would rebuild its packages against a builder it was never tested with.
     pulumi-provider-git = {
       url = "github:UnstoppableMango/pulumi-provider-git";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -34,18 +21,6 @@
       inputs.pulumi2nix.inputs.treefmt-nix.follows = "treefmt-nix";
     };
 
-    # `github` and `gitlab` plugins, built with pulumi2nix and tracked against
-    # the Pulumi registry. The `follows` keeps one nixpkgs in the closure:
-    # pulumipkgs re-exports several nixpkgs packages by path from its own
-    # `inputs.nixpkgs`, so an unfollowed input would drag in a second one.
-    #
-    # These builds substitute from https://unmango.cachix.org. That is not
-    # declared as a `nixConfig` here, because nix ignores flake config unless
-    # every invocation passes `--accept-flake-config` and warns each time it
-    # does so. Add it to your own nix.conf instead:
-    #   extra-substituters = https://unmango.cachix.org
-    #   extra-trusted-public-keys = unmango.cachix.org-1:Psb+0nALJfIcYiZLc9JYri4FJGNnzM6goZX7iLErXCI=
-    # CI gets it from cachix-action's `extraPullNames`.
     pulumipkgs = {
       url = "github:unmango/pulumipkgs";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -135,11 +110,6 @@
           };
         in
         {
-          # pulumipkgs' overlay *replaces* `pulumiPackages` rather than adding
-          # to it, so nixpkgs' own entries (pulumi-azure-native, its
-          # pulumi-command, ...) are not reachable through this `pkgs`. The only
-          # one used here is `pulumi-bun`, which pulumipkgs re-exports as the
-          # very same derivation nixpkgs builds.
           _module.args.pkgs = import inputs.nixpkgs {
             inherit system;
             overlays = [ inputs.pulumipkgs.overlays.default ];
