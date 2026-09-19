@@ -42,15 +42,21 @@
     inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = import inputs.systems;
-      imports = [
-        inputs.systems.flakeModule
-        inputs.treefmt-nix.flakeModule
+
+      imports = with inputs; [
+        systems.flakeModule
+        treefmt-nix.flakeModule
       ];
 
       perSystem =
-        { pkgs, system, ... }:
+        {
+          inputs',
+          pkgs,
+          system,
+          ...
+        }:
         let
-          gitProvider = inputs.pulumi-provider-git.packages.${system};
+          gitProvider = inputs'.pulumi-provider-git.packages;
 
           vendorGitSdk = pkgs.writeShellApplication {
             name = "vendor-git-sdk";
