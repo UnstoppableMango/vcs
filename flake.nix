@@ -52,65 +52,21 @@
         let
           gitProvider = inputs.pulumi-provider-git.packages.${system};
 
-          # `@unmango/pulumi-git` isn't published to npm, so the nix-built SDK is
-          # placed into node_modules by hand. Copied, not symlinked: the SDK
-          # declares @pulumi/pulumi as a dependency but doesn't ship it, and
-          # node and bun both resolve from a symlink's realpath, so a symlinked
-          # SDK would search upward from /nix/store and never find our copy.
-          vendorGitSdk = pkgs.writeShellScriptBin "vendor-git-sdk" ''
-            set -euo pipefail
-            rm -rf node_modules/@unmango/pulumi-git
-            mkdir -p node_modules/@unmango
-            cp -rL --no-preserve=mode,ownership \
-              ${gitProvider.sdk-nodejs}/lib/node_modules/@unmango/pulumi-git \
-              node_modules/@unmango/pulumi-git
-          '';
+          vendorGitSdk = pkgs.writeShellApplication {
+            name = "vendor-git-sdk";
+            runtimeEnv.GIT_SDK_NODEJS = gitProvider.sdk-nodejs;
+            text = builtins.readFile ./scripts/vendor-git-sdk.sh;
+          };
 
-          # A plugin on PATH is version-blind: pulumi runs whichever binary it
-          # finds and never checks it against the version the SDK asks for, so a
-          # bump to either lock that the other hasn't followed would silently
-          # run a provider the SDK wasn't built against. Compare the two pins
-          # directly instead.
-          #
-          # The nix side is interpolated at build time, so this script is only
-          # ever right about the shell it was built for.
           checkPulumiPlugins = pkgs.writeShellApplication {
             name = "check-pulumi-plugins";
             runtimeInputs = [ pkgs.jq ];
-            text = ''
-              status=0
-
-              check() {
-                local plugin=$1 dir=$2 pinned=$3 manifest sdk
-
-                manifest="$dir/package.json"
-                if [ ! -f "$manifest" ]; then
-                  echo "$plugin: no SDK at $dir"
-                  case "$plugin" in
-                    git) echo "  the vendored copy is missing. Run \`vendor-git-sdk\`." ;;
-                    *)   echo "  the dependency isn't installed. Run \`bun install\`." ;;
-                  esac
-                  status=1
-                  return
-                fi
-
-                sdk=$(jq -r '.pulumi.version // .version' "$manifest")
-                if [ "$sdk" != "$pinned" ]; then
-                  echo "$plugin: SDK $sdk != PATH plugin $pinned"
-                  case "$plugin" in
-                    git) echo "  the vendored SDK is stale. Run \`vendor-git-sdk\`." ;;
-                    *)   echo "  the two pins have drifted. Run \`bun add @pulumi/$plugin@$pinned\` to follow the plugin, or \`nix flake update pulumipkgs\` to follow the SDK." ;;
-                  esac
-                  status=1
-                fi
-              }
-
-              check github node_modules/@pulumi/github ${pkgs.pulumiPackages.github.version}
-              check gitlab node_modules/@pulumi/gitlab ${pkgs.pulumiPackages.gitlab.version}
-              check git node_modules/@unmango/pulumi-git ${gitProvider.default.version}
-
-              exit "$status"
-            '';
+            runtimeEnv = {
+              GITHUB_PLUGIN_VERSION = pkgs.pulumiPackages.github.version;
+              GITLAB_PLUGIN_VERSION = pkgs.pulumiPackages.gitlab.version;
+              GIT_PLUGIN_VERSION = gitProvider.default.version;
+            };
+            text = builtins.readFile ./scripts/check-pulumi-plugins.sh;
           };
         in
         {
