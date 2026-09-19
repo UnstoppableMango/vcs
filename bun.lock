@@ -335,7 +335,7 @@
 
     "protobufjs": ["protobufjs@7.6.5", "", { "dependencies": { "@protobufjs/aspromise": "^1.1.2", "@protobufjs/base64": "^1.1.2", "@protobufjs/codegen": "^2.0.5", "@protobufjs/eventemitter": "^1.1.1", "@protobufjs/fetch": "^1.1.1", "@protobufjs/float": "^1.0.2", "@protobufjs/path": "^1.1.2", "@protobufjs/pool": "^1.1.0", "@protobufjs/utf8": "^1.1.1", "@types/node": ">=13.7.0", "long": "^5.3.2" } }, "sha512-/FPD0nUc9jH6rfFjji9IBqOz4pcSE3CsT1m7Ep6Mdb0LxSUMj8hgl6GomOvZzpNpAqqGaXA0P3VSrZLFzIhQrw=="],
 
-    "pulumi-components": ["pulumi-components@github:UnstoppableMango/pulumi-components#a81a242", { "dependencies": { "@pulumi/github": "^6.14.0", "@pulumi/pulumi": "^3.244.0" } }, "UnstoppableMango-pulumi-components-a81a242", "sha512-tdlRjZgbv43Akzrw8w3iHfLMPPVSCQRTTr8IPKDBVfDCUuJ4oALf6XYt2BWlOlLcQkUs87InkfvAubHxPEFR4Q=="],
+    "pulumi-components": ["pulumi-components@github:UnstoppableMango/pulumi-components#7339b73", { "dependencies": { "@pulumi/github": "^6.14.0", "@pulumi/gitlab": "^10.1.1", "@pulumi/pulumi": "^3.244.0" } }, "UnstoppableMango-pulumi-components-7339b73", "sha512-qXEJRM5VT3eNghvWG1ANyfqSByd9rbQSmAuxwsqUVYAOsdqcQjVp28H6QWZ5jORQSJpBK1vapG4iNLJOeQZIHQ=="],
 
     "read-cmd-shim": ["read-cmd-shim@6.0.0", "", {}, "sha512-1zM5HuOfagXCBWMN83fuFI/x+T/UhZ7k+KIzhrHXcQoeX5+7gmaDYjELQHmmzIodumBHeByBJT4QYS7ufAgs7A=="],
 

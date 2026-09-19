@@ -1,4 +1,3 @@
-import * as gh from "@pulumi/github";
 import { integrationIds, PublicRepo } from "pulumi-components";
 
 export const a2b = new PublicRepo("a2b", {
@@ -55,28 +54,56 @@ export const sql2csharp = new PublicRepo("sql2csharp", {
 	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
 });
 
-export const tdl = new gh.Repository(
+export const tdl = new PublicRepo(
 	"tdl",
 	{
-		name: "tdl",
-		allowAutoMerge: true,
-		allowMergeCommit: false,
-		allowUpdateBranch: true,
-		deleteBranchOnMerge: true,
 		description: "Type description language and codegen suite",
-		hasIssues: true,
-		hasProjects: true,
-		securityAndAnalysis: {
-			secretScanning: {
-				status: "enabled",
-			},
-			secretScanningPushProtection: {
-				status: "enabled",
+		// Each of these is a live setting the component's defaults would
+		// otherwise change. licenseTemplate is unset because tdl is GPL-3.0
+		// rather than the component's MIT.
+		overrides: {
+			allowRebaseMerge: true,
+			allowUpdateBranch: true,
+			hasProjects: true,
+			licenseTemplate: undefined,
+			squashMergeCommitTitle: "PR_TITLE",
+			webCommitSignoffRequired: true,
+			securityAndAnalysis: {
+				secretScanning: {
+					status: "enabled",
+				},
+				secretScanningPushProtection: {
+					status: "enabled",
+				},
 			},
 		},
-		squashMergeCommitTitle: "PR_TITLE",
-		visibility: "public",
-		webCommitSignoffRequired: true,
+		// A key given here replaces that rule outright, so pullRequest is
+		// restated in full. Thread resolution is the gate tdl's AGENTS.md
+		// documents: main takes no approving review, and does take a resolved
+		// thread on every comment.
+		rules: {
+			creation: true,
+			pullRequest: {
+				dismissStaleReviewsOnPush: true,
+				requiredApprovingReviewCount: 0,
+				requiredReviewThreadResolution: true,
+				allowedMergeMethods: ["merge", "squash", "rebase"],
+			},
+		},
+		requiredChecks: [
+			{ context: "Markdown Lint", integrationId: integrationIds.github },
+			{ context: "Build and Test", integrationId: integrationIds.github },
+			{ context: "golangci-lint", integrationId: integrationIds.github },
+			{ context: "Buf", integrationId: integrationIds.github },
+		],
+		// The repository predates this component and the ruleset was made in
+		// the UI, so both are adopted rather than created.
+		repoOptions: {
+			aliases: [
+				"urn:pulumi:prod::vcs::github:index/repository:Repository::tdl",
+			],
+		},
+		rulesetOptions: { import: "tdl:962997" },
 	},
 	{ protect: true },
 );
