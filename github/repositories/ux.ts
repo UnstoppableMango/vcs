@@ -91,10 +91,10 @@ export const tdl = new PublicRepo(
 			},
 		},
 		requiredChecks: [
-			{ context: "Markdown Lint", integrationId: integrationIds.github },
-			{ context: "Build and Test", integrationId: integrationIds.github },
-			{ context: "golangci-lint", integrationId: integrationIds.github },
-			{ context: "Buf", integrationId: integrationIds.github },
+			{ context: "build", integrationId: integrationIds.github },
+			{ context: "lint", integrationId: integrationIds.github },
+			{ context: "buf", integrationId: integrationIds.github },
+			{ context: "markdown", integrationId: integrationIds.github },
 		],
 		// The repository predates this component and the ruleset was made in
 		// the UI, so both are adopted rather than created.
