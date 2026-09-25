@@ -106,11 +106,6 @@ export const wireguardCni = new PublicRepo("wireguard-cni", {
 	description: "Wireguard CNI plugin",
 });
 
-export const zettelkasten = new PublicRepo("zettelkasten", {
-	description: "A software implementation of zettelkasten, tailored to me",
-	topics: ["zettelkasten", "notes", "knowledge-management", "markdown"],
-});
-
 export const nixSystems = new PublicRepo("nix-systems", {
 	description: "github.com/nix-systems pin",
 	topics: ["nix", "nix-systems", "nixos", "flake"],
