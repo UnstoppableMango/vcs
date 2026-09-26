@@ -54,6 +54,10 @@ export const hosts = new PublicRepo("hosts", {
 	// }),
 });
 
+export const iam = new PrivateRepo("iam", {
+	description: "Identity and access management as code",
+});
+
 export const nixos = new PublicRepo("nixos", {
 	description: "My NixOS source",
 	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
