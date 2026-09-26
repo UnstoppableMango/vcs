@@ -133,7 +133,6 @@ new gh.RepositoryRuleset(
 			deletion: true,
 			nonFastForward: true,
 			requiredLinearHistory: true,
-			requiredSignatures: true,
 			pullRequest: {
 				allowedMergeMethods: ["squash"],
 				dismissStaleReviewsOnPush: false,
@@ -166,7 +165,6 @@ new gh.RepositoryRuleset(
 			deletion: true,
 			nonFastForward: true,
 			requiredLinearHistory: true,
-			requiredSignatures: true,
 			requiredStatusChecks: {
 				doNotEnforceOnCreate: false,
 				strictRequiredStatusChecksPolicy: false,
