@@ -3,6 +3,10 @@ import { integrationIds, PrivateRepo, PublicRepo } from "pulumi-components";
 
 export const me = new PrivateRepo("erik", { description: "me" });
 
+export const zettelkasten = new PrivateRepo("zettelkasten", {
+	description: "Notes captured with unmango/slip",
+});
+
 export const dotfiles = new gh.Repository(
 	"dotfiles",
 	{
