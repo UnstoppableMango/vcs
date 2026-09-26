@@ -77,7 +77,6 @@ export const xmageRuleset = new gh.RepositoryRuleset("xmage-docker", {
 		},
 		nonFastForward: true,
 		requiredLinearHistory: true,
-		requiredSignatures: true,
 		requiredStatusChecks: {
 			requiredChecks: [
 				{ context: "Build", integrationId: integrationIds.github },
