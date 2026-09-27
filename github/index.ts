@@ -87,7 +87,7 @@ new PublicRepo("renovate-config", {
 	],
 });
 
-new gh.Repository(
+const theCluster = new gh.Repository(
 	"the-cluster",
 	{
 		name: "the-cluster",
@@ -112,4 +112,69 @@ new gh.Repository(
 		webCommitSignoffRequired: true,
 	},
 	{ protect: true },
+);
+
+// This ruleset and github's below were made in the UI. They are adopted as
+// they stand, so these rules restate what each already had.
+new gh.RepositoryRuleset(
+	"the-cluster",
+	{
+		name: "main",
+		repository: theCluster.name,
+		enforcement: "active",
+		target: "branch",
+		conditions: {
+			refName: {
+				includes: ["~DEFAULT_BRANCH"],
+				excludes: [],
+			},
+		},
+		rules: {
+			deletion: true,
+			nonFastForward: true,
+			requiredLinearHistory: true,
+			requiredSignatures: true,
+			pullRequest: {
+				allowedMergeMethods: ["squash"],
+				dismissStaleReviewsOnPush: false,
+				requireCodeOwnerReview: false,
+				requireLastPushApproval: false,
+				requiredApprovingReviewCount: 0,
+				requiredReviewThreadResolution: false,
+			},
+		},
+	},
+	{ import: "the-cluster:6525623" },
+);
+
+// The github repository itself is not declared here, only its ruleset.
+new gh.RepositoryRuleset(
+	"github",
+	{
+		name: "main",
+		repository: "github",
+		enforcement: "active",
+		target: "branch",
+		conditions: {
+			refName: {
+				includes: ["~DEFAULT_BRANCH"],
+				excludes: [],
+			},
+		},
+		rules: {
+			creation: true,
+			deletion: true,
+			nonFastForward: true,
+			requiredLinearHistory: true,
+			requiredSignatures: true,
+			requiredStatusChecks: {
+				doNotEnforceOnCreate: false,
+				strictRequiredStatusChecksPolicy: false,
+				requiredChecks: [
+					{ context: "pulumi", integrationId: integrationIds.github },
+				],
+			},
+		},
+	},
+	{ import: "github:1054380" },
 );
