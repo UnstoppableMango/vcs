@@ -18,9 +18,10 @@ format fmt:
 
 install: node_modules/.installed
 
-# Reinstall whenever the lockfile moves, so a pull can't leave stale packages
-# behind. `bun install` prunes the vendored git SDK, so re-place it after.
-node_modules/.installed: package.json bun.lock
+# Reinstall whenever a lockfile moves, so a pull can't leave stale packages
+# behind. The git SDK is pinned by the flake, and `bun install` prunes it, so
+# re-place it after.
+node_modules/.installed: package.json bun.lock flake.nix flake.lock
 	bun install --frozen-lockfile
 	nix develop -c vendor-git-sdk
 	touch $@
