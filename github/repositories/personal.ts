@@ -1,4 +1,5 @@
 import * as gh from "@pulumi/github";
+import * as pulumi from "@pulumi/pulumi";
 import { integrationIds, PrivateRepo, PublicRepo } from "pulumi-components";
 
 export const me = new PrivateRepo("erik", { description: "me" });
@@ -57,6 +58,23 @@ export const hosts = new PublicRepo("hosts", {
 export const iam = new PrivateRepo("iam", {
 	description: "Identity and access management as code",
 });
+
+const config = new pulumi.Config();
+const controlPlane = new pulumi.StackReference("organization/control-plane/prod");
+
+const iamAzureVariables = {
+	AZURE_CLIENT_ID: controlPlane.requireOutput("iamClientId").apply(String),
+	AZURE_TENANT_ID: config.require("azureTenantId"),
+	AZURE_SUBSCRIPTION_ID: config.require("azureSubscriptionId"),
+};
+
+for (const [variableName, value] of Object.entries(iamAzureVariables)) {
+	new gh.ActionsVariable(
+		`iam-${variableName}`,
+		{ repository: iam.repo.name, variableName, value },
+		{ parent: iam },
+	);
+}
 
 export const nixos = new PublicRepo("nixos", {
 	description: "My NixOS source",

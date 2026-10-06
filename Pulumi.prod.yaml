@@ -4,4 +4,6 @@ config:
   github:token:
     secure: v1:NAdY9TMDh2S45+De:cIo3eF+U+Q0BG1oyZbnqVzUL8GFlyn2l3513PBS7QIT86uJXJ6iBrYllQVLr1xN1X+sSeYWpxGS+5XJ3LB7Iq0m4oDIgMi3DC1NuSmRqfNqxVqffmofFs8XuJ/Op6qPkU1JXZRKU6EMfA02vNw==
   github:owner: UnstoppableMango
+  vcs:azureSubscriptionId: 331fb30f-0da7-4da5-8ec0-3b34c1747e42
+  vcs:azureTenantId: cc1862e8-3663-4b04-afb6-da85f96a6111
 encryptionsalt: v1:BPpuURebBXc=:v1:zfj8JSZaBJsDJ2mB:lhi0GDMvGu39tkGW3gapc2/tGZyV0w==
