@@ -61,11 +61,10 @@ export const iam = new PrivateRepo("iam", {
 });
 
 const config = new pulumi.Config();
+const controlPlane = new pulumi.StackReference("organization/control-plane/prod");
 
-// control-plane's iamClientId output, copied by hand until control-plane
-// state is on this backend and a StackReference can read it.
 const iamAzureVariables = {
-	AZURE_CLIENT_ID: config.require("iamAzureClientId"),
+	AZURE_CLIENT_ID: controlPlane.requireOutput("iamClientId").apply(String),
 	AZURE_TENANT_ID: config.require("azureTenantId"),
 	AZURE_SUBSCRIPTION_ID: config.require("azureSubscriptionId"),
 };
