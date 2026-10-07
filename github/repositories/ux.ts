@@ -124,12 +124,7 @@ export const docker2nix = new PublicRepo("docker2nix", {
 });
 
 export const ux = new PublicRepo("ux", {
-	description: `The universal codegen framework`,
-	topics: ["codegen", "go", "protobuf"],
-	requiredChecks: [
-		{ context: "build", integrationId: integrationIds.github },
-		{ context: "lint", integrationId: integrationIds.github },
-		{ context: "docker", integrationId: integrationIds.github },
-		{ context: "clean", integrationId: integrationIds.github },
-	],
+	description: "Expressive artifact conversion pipelines",
+	topics: ["codegen", "go", "nix"],
+	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
 });
