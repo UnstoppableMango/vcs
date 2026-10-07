@@ -40,6 +40,7 @@ new gh.RepositoryVulnerabilityAlerts(
 
 export const hosts = new PublicRepo("hosts", {
 	description: "My on-prem server infrastructure",
+	requiredChecks: [],
 	// This was jank from the beginning, need to decide on a better way
 	// requiredChecks: gh.getRepositoryFileOutput({
 	// 	file: 'hosts.txt',
