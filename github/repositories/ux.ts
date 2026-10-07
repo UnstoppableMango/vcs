@@ -90,11 +90,6 @@ export const tdl = new PublicRepo(
 				allowedMergeMethods: ["merge", "squash", "rebase"],
 			},
 		},
-		// tdl's CI ends in a `required` job that fails when any job it needs
-		// did, so its jobs can change without this list changing.
-		requiredChecks: [
-			{ context: "required", integrationId: integrationIds.github },
-		],
 		// The repository predates this component and the ruleset was made in
 		// the UI, so both are adopted rather than created.
 		repoOptions: {

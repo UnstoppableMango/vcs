@@ -100,13 +100,16 @@ export const piaManualConnections = new PublicRepo("pia-manual-connections", {
 
 export const pulumiBun = new PublicRepo("pulumi-bun", {
 	description: "Experimental Pulumi support for Bun",
+	requiredChecks: [],
 });
 
 export const wireguardCni = new PublicRepo("wireguard-cni", {
 	description: "Wireguard CNI plugin",
+	requiredChecks: [],
 });
 
 export const nixSystems = new PublicRepo("nix-systems", {
 	description: "github.com/nix-systems pin",
 	topics: ["nix", "nix-systems", "nixos", "flake"],
+	requiredChecks: [],
 });
