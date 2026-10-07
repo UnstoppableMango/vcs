@@ -28,6 +28,7 @@ export const johnstonDems = new PrivateRepo("johnston-dems-mailer", {
 export const slackerBot = new PublicRepo("slacker-bot", {
 	description: "A Discord bot for the Slackers",
 	topics: ["discord", "bot", "slackers"],
+	requiredChecks: [],
 });
 
 export const xmageDocker = new gh.Repository("xmage-docker", {

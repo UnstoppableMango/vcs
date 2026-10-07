@@ -33,6 +33,7 @@ export const fsharpPropertyTesting = new gh.Repository(
 export const gheIac = new PublicRepo("ghe-iac", {
 	description:
 		"Proof-of-concept managing a GitHub Enterprise instance with Terraform",
+	requiredChecks: [],
 });
 
 export const imaug = new gh.Repository(

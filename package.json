@@ -9,7 +9,7 @@
         "@pulumi/github": "^6.14.0",
         "@pulumi/gitlab": "10.2.0",
         "@pulumi/pulumi": "^3.226.0",
-        "pulumi-components": "github:UnstoppableMango/pulumi-components"
+        "pulumi-components": "github:UnstoppableMango/pulumi-components#4cd1df8b9f34fcb31b860877f2870c02f856773d"
     },
     "peerDependencies": {
         "typescript": "^5 || ^7.0.0"

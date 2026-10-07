@@ -28,6 +28,7 @@ new gh.Repository(
 
 new PublicRepo("everybody-codes", {
 	description: "Everybody Codes solutions in various languages",
+	requiredChecks: [],
 });
 
 new PublicRepo("lang", {
@@ -56,6 +57,7 @@ new gh.Repository(
 
 new PublicRepo("ouranosis", {
 	description: "A game-ish kinda thing",
+	requiredChecks: [],
 });
 
 new gh.Repository(
