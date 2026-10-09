@@ -1,6 +1,13 @@
 import * as gh from "@pulumi/github";
 import { integrationIds, PublicRepo } from "pulumi-components";
 
+export const confit = new PublicRepo("confit", {
+	description:
+		"Use git as a buffer and ledger between config UIs and the systems they configure",
+	topics: ["go", "git", "nix", "home-manager", "dconf", "configuration", "tool"],
+	requiredChecks: [{ context: "required", integrationId: integrationIds.github }],
+});
+
 export const devcontainers = new PublicRepo("devcontainers", {
 	description: "Home-grown devcontainer images",
 	topics: ["devcontainer", "docker", "container"],
