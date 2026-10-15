@@ -1,0 +1,116 @@
+diff --git a/builder/default.nix b/builder/default.nix
+index f2a2c21..66edd0b 100644
+--- a/builder/default.nix
++++ b/builder/default.nix
+@@ -402,6 +402,7 @@ let
+       modules ? pwd + "/gomod2nix.toml",
+       src ? pwd,
+       pwd ? null,
++      goMod ? null,
+       nativeBuildInputs ? [ ],
+       allowGoReference ? false,
+       meta ? { },
+@@ -415,11 +416,17 @@ let
+     let
+       modulesStruct = if modules == null then { } else fromTOML (readFile modules);
+ 
+-      goModPath = "${toString pwd}/go.mod";
++      goModPath = if pwd != null then "${toString pwd}/go.mod" else null;
+ 
+-      goMod = if pwd != null && pathExists goModPath then parseGoMod (readFile goModPath) else null;
++      resolvedGoMod =
++        if goMod != null then
++          goMod
++        else if goModPath != null && pathExists goModPath then
++          parseGoMod (readFile goModPath)
++        else
++          null;
+ 
+-      go = selectGo attrs goMod;
++      go = selectGo attrs resolvedGoMod;
+ 
+       defaultPackage = modulesStruct.goPackagePath or "";
+ 
+@@ -429,37 +436,51 @@ let
+             inherit
+               defaultPackage
+               go
+-              goMod
+               modulesStruct
+               pwd
+               ;
++            goMod = resolvedGoMod;
+           }
+         else
+           null;
+ 
+       # Filter source to only dependency files for cache derivation
+       # Use fetched source when building from goPackagePath
+-      # When pwd is set but doesn't contain go.mod (goMod == null), use src instead
++      # When pwd is set but doesn't contain go.mod, use src instead
+       depFilesSrc =
+         if defaultPackage != "" then
+           vendorEnv.passthru.sources.${defaultPackage}
+-        else if goMod != null then
++        else if pwd != null && resolvedGoMod != null then
+           pwd
+         else
+           src;
+ 
++      # A local source is filtered at eval time, so unrelated source changes
++      # leave the cache alone. Filtering a derivation output would read its
++      # listing at eval time, forcing IFD, so that case copies in a build
++      # phase instead.
+       depFilesPath =
+         if (!disableGoCache && modulesStruct != { } && depFilesSrc != null) then
+-          lib.cleanSourceWith {
+-            src = depFilesSrc;
+-            filter =
+-              path: type:
+-              let
+-                baseName = baseNameOf path;
+-              in
+-              baseName == "go.mod" || baseName == "go.sum" || baseName == "gomod2nix.toml";
+-            name = "go-dep-files";
+-          }
++          if builtins.isPath depFilesSrc || depFilesSrc._isLibCleanSourceWith or false then
++            lib.cleanSourceWith {
++              src = depFilesSrc;
++              filter =
++                path: type:
++                let
++                  baseName = baseNameOf path;
++                in
++                baseName == "go.mod" || baseName == "go.sum" || baseName == "gomod2nix.toml";
++              name = "go-dep-files";
++            }
++          else
++            runCommand "go-dep-files" { } ''
++              mkdir -p "$out"
++              for f in go.mod go.sum gomod2nix.toml; do
++                if [ -e "${depFilesSrc}/$f" ]; then
++                  cp "${depFilesSrc}/$f" "$out/$f"
++                fi
++              done
++            ''
+         else
+           null;
+ 
+@@ -476,7 +497,7 @@ let
+               allowGoReference
+               ;
+             CGO_ENABLED = attrs.CGO_ENABLED or go.CGO_ENABLED;
+-            goMod = if goMod != null then goMod else { replace = { }; };
++            goMod = if resolvedGoMod != null then resolvedGoMod else { replace = { }; };
+           }
+         else
+           null;
+@@ -493,7 +514,7 @@ let
+       // optionalAttrs (hasAttr "subPackages" modulesStruct) {
+         subPackages = modulesStruct.subPackages;
+       }
+-      // attrs
++      // removeAttrs attrs [ "goMod" ]
+       // {
+         nativeBuildInputs = [
+           go

@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import * as pulumi from "@pulumi/pulumi";
+import * as git from "@unmango/pulumi-git";
 import { Fork, integrationIds, PublicRepo } from "pulumi-components";
 
 export const nilFork = new Fork("nil", {
@@ -356,6 +359,21 @@ export const gomod2nix = new Fork("gomod2nix", {
 	repository: {
 		description: "Convert applications using go modules to nix",
 	},
+});
+
+// The upstream builder runs `lib.cleanSourceWith` over a fetched `src`, which
+// is import from derivation. The patch copies the dep files in a build phase
+// instead. Consumers pin this branch rather than the fork's default branch.
+export const gomod2nixNoIfd = new git.Branch("gomod2nix-no-ifd", {
+	repository: {
+		url: gomod2nix.repo.httpCloneUrl,
+		host: "github",
+		auth: { token: new pulumi.Config("github").requireSecret("token") },
+	},
+	name: "no-ifd",
+	baseRef: "master",
+	onConflict: "fail",
+	patches: [readFileSync("patches/gomod2nix/avoid-ifd.patch", "utf8")],
 });
 
 export const operatorSdk = new Fork("operator-sdk", {
