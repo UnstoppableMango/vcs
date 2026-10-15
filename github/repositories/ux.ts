@@ -6,16 +6,6 @@ export const a2b = new PublicRepo("a2b", {
 	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
 });
 
-// Moving to unmango/treespec, managed by unmango/github. Retained so dropping
-// it from this stack leaves the repository in place for the transfer, and the
-// description and topics already match what unmango/github imports.
-export const gast = new PublicRepo("gast", {
-	description: "Syntax tree definitions and generated SDKs, built on unist",
-	topics: ["unist", "mdast", "hast", "ast", "protobuf", "tdl", "codegen"],
-	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
-	repoOptions: { retainOnDelete: true },
-});
-
 export const openapi2go = new PublicRepo("openapi2go", {
 	description: "Converts OpenAPI specifications to Go",
 	topics: ["openapi", "ux", "codegen", "go", "ast"],
