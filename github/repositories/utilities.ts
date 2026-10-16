@@ -120,3 +120,10 @@ export const nixSystems = new PublicRepo("nix-systems", {
 	topics: ["nix", "nix-systems", "nixos", "flake"],
 	requiredChecks: [],
 });
+
+export const lib2cli = new PublicRepo("lib2cli", {
+	description:
+		"Generate shell-callable CLI shims for library functions from TDL models",
+	topics: ["tdl", "codegen", "cli", "go", "typescript", "nix", "tool"],
+	requiredChecks: [],
+});
