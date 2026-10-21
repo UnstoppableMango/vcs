@@ -85,3 +85,9 @@ export const xmageRuleset = new gh.RepositoryRuleset("xmage-docker", {
 		},
 	},
 });
+
+export const mangomu = new PublicRepo("mangomu", {
+	description: "Cloud-native emulation from the ground up",
+	topics: ["emulation", "emulator", "kubernetes", "webrtc", "nintendo-ds"],
+	requiredChecks: [],
+});
