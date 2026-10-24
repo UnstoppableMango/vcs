@@ -1,3 +1,4 @@
+import * as gh from "@pulumi/github";
 import { integrationIds, PublicRepo } from "pulumi-components";
 
 export const a2b = new PublicRepo("a2b", {
@@ -93,6 +94,39 @@ export const tdl = new PublicRepo(
 	},
 	{ protect: true },
 );
+
+// The triage states tdl's docs/agents/triage-labels.md names. Each label is
+// its own resource, so the labels GitHub made with the repository stay
+// unmanaged; `wontfix` is one of them, which is why it is missing here.
+const tdlTriageLabels: Record<
+	string,
+	{ color: string; description: string }
+> = {
+	"needs-triage": {
+		color: "fbca04",
+		description: "Maintainer needs to evaluate this issue",
+	},
+	"needs-info": {
+		color: "d876e3",
+		description: "Waiting on reporter for more information",
+	},
+	"ready-for-agent": {
+		color: "0e8a16",
+		description: "Fully specified, ready for an AFK agent",
+	},
+	"ready-for-human": {
+		color: "1d76db",
+		description: "Requires human implementation",
+	},
+};
+
+for (const [name, args] of Object.entries(tdlTriageLabels)) {
+	new gh.IssueLabel(`tdl-${name}`, {
+		repository: tdl.repo.name,
+		name,
+		...args,
+	});
+}
 
 export const terraform2crd = new PublicRepo("terraform2crd", {
 	description:
