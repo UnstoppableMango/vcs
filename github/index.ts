@@ -58,6 +58,7 @@ new gh.Repository(
 new PublicRepo("ouranosis", {
 	description: "A game-ish kinda thing",
 	requiredChecks: [],
+	pages: { buildType: "workflow" },
 });
 
 new gh.Repository(
