@@ -1,5 +1,6 @@
 import * as gh from "@pulumi/github";
 import { integrationIds, PublicRepo } from "pulumi-components";
+import { addMainRuleset } from "./ruleset";
 import { addTriageLabels } from "./triage";
 
 export const vcs = new PublicRepo("vcs", {
@@ -128,3 +129,17 @@ export const pulumiProviderGit = new gh.Repository(
 
 addTriageLabels("vcs", vcs);
 addTriageLabels("pulumi-provider-git", pulumiProviderGit);
+
+addMainRuleset("pulumi-ci-mgmt", pulumiCiMgmt.name, { requiredChecks: [] });
+addMainRuleset(
+	"pulumi-kubernetes-the-hard-way",
+	pulumiKubernetesTheHardWay.name,
+	{ requiredChecks: [] },
+);
+addMainRuleset("pulumi-proxmox", pulumiProxmox.name, { requiredChecks: [] });
+addMainRuleset("pulumi-provider-git", pulumiProviderGit.name, {
+	requiredChecks: [
+		{ context: "build", integrationId: integrationIds.github },
+		{ context: "codegen", integrationId: integrationIds.github },
+	],
+});

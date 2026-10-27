@@ -1,6 +1,7 @@
 import * as gh from "@pulumi/github";
 import * as pulumi from "@pulumi/pulumi";
 import { integrationIds, PrivateRepo, PublicRepo } from "pulumi-components";
+import { addMainRuleset } from "./ruleset";
 
 export const me = new PrivateRepo("erik", { description: "me" });
 
@@ -131,4 +132,9 @@ export const relationships = new PrivateRepo("relationships", {
 export const travel = new PublicRepo("travel", {
 	description: "My adventures wandering the world",
 	requiredChecks: [{ context: "check", integrationId: integrationIds.github }],
+});
+
+addMainRuleset("dotfiles", dotfiles.name, { requiredChecks: [] });
+addMainRuleset("unstoppablemango.io", unstoppablemango_io.name, {
+	requiredChecks: [],
 });

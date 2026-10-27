@@ -1,5 +1,6 @@
 import * as gh from "@pulumi/github";
 import { integrationIds, PublicRepo } from "pulumi-components";
+import { addMainRuleset } from "./ruleset";
 
 export const ansibleOrchard = new PublicRepo("ansible-orchard", {
 	description: "Collection of Ansible playbooks for infrastructure and apps",
@@ -85,3 +86,9 @@ export const pulumiImaug = new gh.Repository(
 	},
 	{ protect: true },
 );
+
+addMainRuleset("fsharp-property-testing", fsharpPropertyTesting.name, {
+	requiredChecks: [],
+});
+addMainRuleset("imaug", imaug.name, { requiredChecks: [] });
+addMainRuleset("pulumi-imaug", pulumiImaug.name, { requiredChecks: [] });

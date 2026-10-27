@@ -1,8 +1,9 @@
 import * as gh from "@pulumi/github";
 import { integrationIds, PublicRepo } from "pulumi-components";
 import "./repositories";
+import { addMainRuleset } from "./repositories/ruleset";
 
-new gh.Repository(
+const adventOfCode = new gh.Repository(
 	"advent-of-code",
 	{
 		name: "advent-of-code",
@@ -36,7 +37,7 @@ new PublicRepo("lang", {
 	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
 });
 
-new gh.Repository(
+const mangoMtg = new gh.Repository(
 	"mango-mtg",
 	{
 		name: "mango-mtg",
@@ -61,7 +62,7 @@ new PublicRepo("ouranosis", {
 	pages: { buildType: "workflow" },
 });
 
-new gh.Repository(
+const palumiWorld = new gh.Repository(
 	"palumi-world",
 	{
 		name: "palumi-world",
@@ -117,65 +118,28 @@ const theCluster = new gh.Repository(
 	{ protect: true },
 );
 
-// This ruleset and github's below were made in the UI. They are adopted as
-// they stand, so these rules restate what each already had.
-new gh.RepositoryRuleset(
+addMainRuleset("advent-of-code", adventOfCode.name, { requiredChecks: [] });
+addMainRuleset("mango-mtg", mangoMtg.name, { requiredChecks: [] });
+addMainRuleset("palumi-world", palumiWorld.name, { requiredChecks: [] });
+
+// This ruleset and github's below were made in the UI and adopted, so each
+// keeps the import it was adopted with.
+addMainRuleset(
 	"the-cluster",
-	{
-		name: "main",
-		repository: theCluster.name,
-		enforcement: "active",
-		target: "branch",
-		conditions: {
-			refName: {
-				includes: ["~DEFAULT_BRANCH"],
-				excludes: [],
-			},
-		},
-		rules: {
-			deletion: true,
-			nonFastForward: true,
-			requiredLinearHistory: true,
-			pullRequest: {
-				allowedMergeMethods: ["squash"],
-				dismissStaleReviewsOnPush: false,
-				requireCodeOwnerReview: false,
-				requireLastPushApproval: false,
-				requiredApprovingReviewCount: 0,
-				requiredReviewThreadResolution: false,
-			},
-		},
-	},
+	theCluster.name,
+	{ requiredChecks: [] },
 	{ import: "the-cluster:6525623" },
 );
 
 // The github repository itself is not declared here, only its ruleset.
-new gh.RepositoryRuleset(
+addMainRuleset(
+	"github",
 	"github",
 	{
-		name: "main",
-		repository: "github",
-		enforcement: "active",
-		target: "branch",
-		conditions: {
-			refName: {
-				includes: ["~DEFAULT_BRANCH"],
-				excludes: [],
-			},
-		},
-		rules: {
-			creation: true,
-			deletion: true,
-			nonFastForward: true,
-			requiredLinearHistory: true,
-			requiredStatusChecks: {
-				doNotEnforceOnCreate: false,
-				strictRequiredStatusChecksPolicy: false,
-				requiredChecks: [
-					{ context: "pulumi", integrationId: integrationIds.github },
-				],
-			},
-		},
+		requiredChecks: [
+			{ context: "pulumi", integrationId: integrationIds.github },
+		],
+		rules: { creation: true },
 	},
 	{ import: "github:1054380" },
 );
