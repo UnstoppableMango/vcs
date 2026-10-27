@@ -1,5 +1,6 @@
 import * as gh from "@pulumi/github";
 import { integrationIds, PublicRepo } from "pulumi-components";
+import { addMainRuleset } from "./ruleset";
 
 export const blockyController = new gh.Repository(
 	"blocky-controller",
@@ -66,4 +67,8 @@ export const wireguardOperator = new PublicRepo("wireguard-operator", {
 	requiredChecks: [
 		{ context: "Run On Ubuntu", integrationId: integrationIds.github },
 	],
+});
+
+addMainRuleset("blocky-controller", blockyController.name, {
+	requiredChecks: [],
 });

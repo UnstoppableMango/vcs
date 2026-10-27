@@ -1,5 +1,6 @@
 import * as gh from "@pulumi/github";
 import { integrationIds, PrivateRepo, PublicRepo } from "pulumi-components";
+import { addMainRuleset } from "./ruleset";
 import { addTriageLabels } from "./triage";
 
 export const minecraftManager = new PublicRepo("minecraft-manager", {
@@ -61,30 +62,8 @@ export const xmageDocker = new gh.Repository("xmage-docker", {
 	visibility: "public",
 });
 
-export const xmageRuleset = new gh.RepositoryRuleset("xmage-docker", {
-	name: "main",
-	repository: xmageDocker.name,
-	enforcement: "active",
-	target: "branch",
-	conditions: {
-		refName: {
-			includes: ["~DEFAULT_BRANCH"],
-			excludes: [],
-		},
-	},
-	rules: {
-		deletion: true,
-		pullRequest: {
-			dismissStaleReviewsOnPush: true,
-		},
-		nonFastForward: true,
-		requiredLinearHistory: true,
-		requiredStatusChecks: {
-			requiredChecks: [
-				{ context: "Build", integrationId: integrationIds.github },
-			],
-		},
-	},
+export const xmageRuleset = addMainRuleset("xmage-docker", xmageDocker.name, {
+	requiredChecks: [{ context: "Build", integrationId: integrationIds.github }],
 });
 
 export const mangomu = new PublicRepo("mangomu", {

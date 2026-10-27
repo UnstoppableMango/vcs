@@ -1,5 +1,6 @@
 import * as gh from "@pulumi/github";
 import { integrationIds, PublicRepo } from "pulumi-components";
+import { addMainRuleset } from "./ruleset";
 
 export const audio = new gh.Repository(
 	"audio",
@@ -129,3 +130,8 @@ export const x12 = new PublicRepo("x12", {
 	topics: ["go", "framework", "paths"],
 	requiredChecks: [],
 });
+
+addMainRuleset("audio", audio.name, { requiredChecks: [] });
+addMainRuleset("http", http.name, { requiredChecks: [] });
+addMainRuleset("rest", rest.name, { requiredChecks: [] });
+addMainRuleset("xml", xml.name, { requiredChecks: [] });

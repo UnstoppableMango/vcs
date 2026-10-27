@@ -1,5 +1,6 @@
 import * as gh from "@pulumi/github";
 import { integrationIds, PublicRepo } from "pulumi-components";
+import { addMainRuleset } from "./ruleset";
 
 export const cliwrapFsharp = new gh.Repository(
 	"CliWrap.FSharp",
@@ -155,3 +156,13 @@ export const proxmoxClient = new gh.Repository(
 	},
 	{ protect: true },
 );
+
+addMainRuleset("CliWrap.FSharp", cliwrapFsharp.name, { requiredChecks: [] });
+addMainRuleset("Docker.Dotnet.FSharp", dockerDotnetFsharp.name, {
+	requiredChecks: [],
+});
+addMainRuleset("Docker.FSharp", dockerFsharp.name, { requiredChecks: [] });
+addMainRuleset("dotnet-proxmox-client", dotnetProxmoxClient.name, {
+	requiredChecks: [],
+});
+addMainRuleset("proxmox-client", proxmoxClient.name, { requiredChecks: [] });
