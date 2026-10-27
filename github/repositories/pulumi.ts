@@ -127,3 +127,4 @@ export const pulumiProviderGit = new gh.Repository(
 );
 
 addTriageLabels("vcs", vcs);
+addTriageLabels("pulumi-provider-git", pulumiProviderGit);
