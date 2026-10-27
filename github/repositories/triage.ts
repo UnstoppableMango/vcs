@@ -23,10 +23,14 @@ const triageLabels: Record<string, { color: string; description: string }> = {
 	},
 };
 
-export function addTriageLabels(prefix: string, repo: PublicRepo): void {
+export function addTriageLabels(
+	prefix: string,
+	repo: PublicRepo | gh.Repository,
+): void {
+	const repository = repo instanceof gh.Repository ? repo.name : repo.repo.name;
 	for (const [name, args] of Object.entries(triageLabels)) {
 		new gh.IssueLabel(`${prefix}-${name}`, {
-			repository: repo.repo.name,
+			repository,
 			name,
 			...args,
 		});
