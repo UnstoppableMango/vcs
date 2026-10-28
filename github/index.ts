@@ -2,6 +2,7 @@ import * as gh from "@pulumi/github";
 import { integrationIds, PublicRepo } from "pulumi-components";
 import "./repositories";
 import { addMainRuleset } from "./repositories/ruleset";
+import { addWayfinderLabels } from "./repositories/wayfinder";
 
 const adventOfCode = new gh.Repository(
 	"advent-of-code",
@@ -117,6 +118,8 @@ const theCluster = new gh.Repository(
 	},
 	{ protect: true },
 );
+
+addWayfinderLabels("the-cluster", theCluster);
 
 addMainRuleset("advent-of-code", adventOfCode.name, { requiredChecks: [] });
 addMainRuleset("mango-mtg", mangoMtg.name, { requiredChecks: [] });
