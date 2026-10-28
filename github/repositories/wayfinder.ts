@@ -2,14 +2,15 @@ import * as gh from "@pulumi/github";
 import type { PublicRepo } from "pulumi-components";
 
 // The labels /wayfinder reads, per a repo's docs/agents/issue-tracker.md: one
-// for the map issue and one per ticket type. The provider's IssueLabel create
-// adopts a label that already exists by name, so a repo where `wayfinder:map`
-// was made by hand needs no import.
+// for the map issue and one per ticket type. Creating a label that already
+// exists fails, so a repo where one was made by hand passes its import ID
+// (`<repo>:<label>`). `wayfinder:map` keeps the grey, undescribed look it was
+// first made with, since an import's inputs must match the label as it is.
 const wayfinderLabels: Record<string, { color: string; description: string }> =
 	{
 		"wayfinder:map": {
-			color: "5319e7",
-			description: "A wayfinder map: the index of decisions toward a destination",
+			color: "ededed",
+			description: "",
 		},
 		"wayfinder:research": {
 			color: "c5def5",
@@ -32,13 +33,14 @@ const wayfinderLabels: Record<string, { color: string; description: string }> =
 export function addWayfinderLabels(
 	prefix: string,
 	repo: PublicRepo | gh.Repository,
+	imports: Record<string, string> = {},
 ): void {
 	const repository = repo instanceof gh.Repository ? repo.name : repo.repo.name;
 	for (const [name, args] of Object.entries(wayfinderLabels)) {
-		new gh.IssueLabel(`${prefix}-${name}`, {
-			repository,
-			name,
-			...args,
-		});
+		new gh.IssueLabel(
+			`${prefix}-${name}`,
+			{ repository, name, ...args },
+			imports[name] ? { import: imports[name] } : undefined,
+		);
 	}
 }

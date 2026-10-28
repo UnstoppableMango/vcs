@@ -119,7 +119,9 @@ const theCluster = new gh.Repository(
 	{ protect: true },
 );
 
-addWayfinderLabels("the-cluster", theCluster);
+addWayfinderLabels("the-cluster", theCluster, {
+	"wayfinder:map": "the-cluster:wayfinder:map",
+});
 
 addMainRuleset("advent-of-code", adventOfCode.name, { requiredChecks: [] });
 addMainRuleset("mango-mtg", mangoMtg.name, { requiredChecks: [] });
