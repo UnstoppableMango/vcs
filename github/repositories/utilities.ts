@@ -130,7 +130,15 @@ export const lib2cli = new PublicRepo("lib2cli", {
 	requiredChecks: [],
 });
 
+export const nuget2json = new PublicRepo("nuget2json", {
+	description:
+		"Write a NuGet lock for Nix's buildDotnetModule without needing Nix",
+	topics: ["nix", "nuget", "dotnet", "go", "renovate", "tool"],
+	requiredChecks: [],
+});
+
 addTriageLabels("confit", confit);
+addTriageLabels("nuget2json", nuget2json);
 
 addMainRuleset("multi-downloader-nx-docker", multiDownloaderNxDocker.name, {
 	requiredChecks: [],
