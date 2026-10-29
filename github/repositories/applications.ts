@@ -1,7 +1,6 @@
 import * as gh from "@pulumi/github";
 import { integrationIds, PrivateRepo, PublicRepo } from "pulumi-components";
 import { addMainRuleset } from "./ruleset";
-import { addTriageLabels } from "./triage";
 
 export const minecraftManager = new PublicRepo("minecraft-manager", {
 	description:
@@ -71,5 +70,3 @@ export const mangomu = new PublicRepo("mangomu", {
 	topics: ["emulation", "emulator", "kubernetes", "webrtc", "nintendo-ds"],
 	requiredChecks: [],
 });
-
-addTriageLabels("mangomu", mangomu);

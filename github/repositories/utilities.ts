@@ -1,7 +1,6 @@
 import * as gh from "@pulumi/github";
 import { integrationIds, PublicRepo } from "pulumi-components";
 import { addMainRuleset } from "./ruleset";
-import { addTriageLabels } from "./triage";
 
 export const confit = new PublicRepo("confit", {
 	description:
@@ -129,8 +128,6 @@ export const lib2cli = new PublicRepo("lib2cli", {
 	topics: ["tdl", "codegen", "cli", "go", "typescript", "nix", "tool"],
 	requiredChecks: [],
 });
-
-addTriageLabels("confit", confit);
 
 addMainRuleset("multi-downloader-nx-docker", multiDownloaderNxDocker.name, {
 	requiredChecks: [],

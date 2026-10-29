@@ -1,5 +1,4 @@
 import { integrationIds, PublicRepo } from "pulumi-components";
-import { addTriageLabels } from "./triage";
 
 export const a2b = new PublicRepo("a2b", {
 	description: "Registry for converter utilities",
@@ -94,8 +93,6 @@ export const tdl = new PublicRepo(
 	},
 	{ protect: true },
 );
-
-addTriageLabels("tdl", tdl);
 
 export const terraform2crd = new PublicRepo("terraform2crd", {
 	description:
