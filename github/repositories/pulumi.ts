@@ -1,7 +1,6 @@
 import * as gh from "@pulumi/github";
 import { integrationIds, PublicRepo } from "pulumi-components";
 import { addMainRuleset } from "./ruleset";
-import { addTriageLabels } from "./triage";
 
 export const vcs = new PublicRepo("vcs", {
 	description: "Version control infrastructure as code",
@@ -126,9 +125,6 @@ export const pulumiProviderGit = new gh.Repository(
 	},
 	{ protect: true },
 );
-
-addTriageLabels("vcs", vcs);
-addTriageLabels("pulumi-provider-git", pulumiProviderGit);
 
 addMainRuleset("pulumi-ci-mgmt", pulumiCiMgmt.name, { requiredChecks: [] });
 addMainRuleset(

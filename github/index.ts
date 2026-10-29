@@ -1,8 +1,13 @@
 import * as gh from "@pulumi/github";
-import { integrationIds, PublicRepo } from "pulumi-components";
-import "./repositories";
+import { integrationIds, PrivateRepo, PublicRepo } from "pulumi-components";
+import * as repositories from "./repositories";
+import * as archived from "./repositories/archived";
+import {
+	type AgentLabelOptions,
+	addAgentLabels,
+	type LabeledRepo,
+} from "./repositories/labels";
 import { addMainRuleset } from "./repositories/ruleset";
-import { addWayfinderLabels } from "./repositories/wayfinder";
 
 const adventOfCode = new gh.Repository(
 	"advent-of-code",
@@ -28,12 +33,12 @@ const adventOfCode = new gh.Repository(
 	{ protect: true },
 );
 
-new PublicRepo("everybody-codes", {
+const everybodyCodes = new PublicRepo("everybody-codes", {
 	description: "Everybody Codes solutions in various languages",
 	requiredChecks: [],
 });
 
-new PublicRepo("lang", {
+const lang = new PublicRepo("lang", {
 	description: "A programming language",
 	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
 });
@@ -57,7 +62,7 @@ const mangoMtg = new gh.Repository(
 	{ protect: true },
 );
 
-new PublicRepo("ouranosis", {
+const ouranosis = new PublicRepo("ouranosis", {
 	description: "A game-ish kinda thing",
 	requiredChecks: [],
 	pages: { buildType: "workflow" },
@@ -84,7 +89,7 @@ const palumiWorld = new gh.Repository(
 	{ protect: true },
 );
 
-new PublicRepo("renovate-config", {
+const renovateConfig = new PublicRepo("renovate-config", {
 	description: `UnstoppableMango's Renovate presets`,
 	topics: ["renovate", "cicd", "bun"],
 	requiredChecks: [
@@ -119,10 +124,6 @@ const theCluster = new gh.Repository(
 	{ protect: true },
 );
 
-addWayfinderLabels("the-cluster", theCluster, {
-	"wayfinder:map": "the-cluster:wayfinder:map",
-});
-
 addMainRuleset("advent-of-code", adventOfCode.name, { requiredChecks: [] });
 addMainRuleset("mango-mtg", mangoMtg.name, { requiredChecks: [] });
 addMainRuleset("palumi-world", palumiWorld.name, { requiredChecks: [] });
@@ -148,3 +149,74 @@ addMainRuleset(
 	},
 	{ import: "github:1054380" },
 );
+
+// Every repository that isn't archived or a fork gets the agent labels. Each
+// label is named for the repository's export, in kebab case, which matches the
+// names the labels were first managed under. The modules export rulesets and
+// forks too, which the loop skips.
+const labeledRepos: Record<string, unknown> = {
+	...repositories,
+	adventOfCode,
+	everybodyCodes,
+	lang,
+	mangoMtg,
+	ouranosis,
+	palumiWorld,
+	renovateConfig,
+	theCluster,
+};
+
+// Opt-outs, and the labels that were made by hand before this program managed
+// them. The imports can go once they have run.
+const labelOptions: Record<string, AgentLabelOptions> = {
+	mangomu: {
+		imports: {
+			"wayfinder:map": "mangomu:wayfinder:map",
+			"wayfinder:research": "mangomu:wayfinder:research",
+			"wayfinder:prototype": "mangomu:wayfinder:prototype",
+			"wayfinder:grilling": "mangomu:wayfinder:grilling",
+			"wayfinder:task": "mangomu:wayfinder:task",
+		},
+	},
+	proxmoxClient: {
+		imports: { "ready-for-human": "proxmox-client:ready-for-human" },
+	},
+	pulumi2crd: {
+		imports: {
+			"ready-for-agent": "pulumi2crd:ready-for-agent",
+			"ready-for-human": "pulumi2crd:ready-for-human",
+		},
+	},
+	pulumi2nix: {
+		imports: {
+			"needs-triage": "pulumi2nix:needs-triage",
+			"ready-for-agent": "pulumi2nix:ready-for-agent",
+		},
+	},
+	tdl: {
+		imports: { "wayfinder:map": "tdl:wayfinder:map" },
+	},
+	terraformProviderPfSense: {
+		imports: {
+			"ready-for-agent": "terraform-provider-pfsense:ready-for-agent",
+		},
+	},
+	theCluster: {
+		imports: {
+			"ready-for-agent": "the-cluster:ready-for-agent",
+			"wayfinder:map": "the-cluster:wayfinder:map",
+		},
+	},
+};
+
+const isLabeledRepo = (x: unknown): x is LabeledRepo =>
+	x instanceof PublicRepo ||
+	x instanceof PrivateRepo ||
+	x instanceof gh.Repository;
+const kebab = (s: string) => s.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+
+for (const [key, repo] of Object.entries(labeledRepos)) {
+	if (key in archived) continue;
+	if (!isLabeledRepo(repo)) continue;
+	addAgentLabels(kebab(key), repo, labelOptions[key]);
+}
