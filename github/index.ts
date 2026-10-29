@@ -166,48 +166,9 @@ const labeledRepos: Record<string, unknown> = {
 	theCluster,
 };
 
-// Opt-outs, and the labels that were made by hand before this program managed
-// them. The imports can go once they have run.
-const labelOptions: Record<string, AgentLabelOptions> = {
-	mangomu: {
-		imports: {
-			"wayfinder:map": "mangomu:wayfinder:map",
-			"wayfinder:research": "mangomu:wayfinder:research",
-			"wayfinder:prototype": "mangomu:wayfinder:prototype",
-			"wayfinder:grilling": "mangomu:wayfinder:grilling",
-			"wayfinder:task": "mangomu:wayfinder:task",
-		},
-	},
-	proxmoxClient: {
-		imports: { "ready-for-human": "proxmox-client:ready-for-human" },
-	},
-	pulumi2crd: {
-		imports: {
-			"ready-for-agent": "pulumi2crd:ready-for-agent",
-			"ready-for-human": "pulumi2crd:ready-for-human",
-		},
-	},
-	pulumi2nix: {
-		imports: {
-			"needs-triage": "pulumi2nix:needs-triage",
-			"ready-for-agent": "pulumi2nix:ready-for-agent",
-		},
-	},
-	tdl: {
-		imports: { "wayfinder:map": "tdl:wayfinder:map" },
-	},
-	terraformProviderPfSense: {
-		imports: {
-			"ready-for-agent": "terraform-provider-pfsense:ready-for-agent",
-		},
-	},
-	theCluster: {
-		imports: {
-			"ready-for-agent": "the-cluster:ready-for-agent",
-			"wayfinder:map": "the-cluster:wayfinder:map",
-		},
-	},
-};
+// Opt-outs, and labels made by hand that need importing before this program
+// can manage them.
+const labelOptions: Record<string, AgentLabelOptions> = {};
 
 const isLabeledRepo = (x: unknown): x is LabeledRepo =>
 	x instanceof PublicRepo ||
