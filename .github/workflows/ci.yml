@@ -106,11 +106,6 @@ jobs:
 
       - run: nix develop -c bun install --frozen-lockfile
 
-      # `@unmango/pulumi-git` isn't a package.json dependency (it's unpublished,
-      # so bun can't resolve it), which leaves `bun install` free to prune it.
-      # Re-place it after the install rather than before.
-      - run: nix develop -c vendor-git-sdk
-
       # Every plugin is on PATH from nix, so a version the SDKs no longer ask
       # for would be used silently. Fail before touching the backend.
       - run: nix develop -c check-pulumi-plugins

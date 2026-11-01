@@ -16,10 +16,7 @@ check() {
   manifest="$dir/package.json"
   if [ ! -f "$manifest" ]; then
     echo "$plugin: no SDK at $dir"
-    case "$plugin" in
-      git) echo "  the vendored copy is missing. Run \`vendor-git-sdk\`." ;;
-      *)   echo "  the dependency isn't installed. Run \`bun install\`." ;;
-    esac
+    echo "  the dependency isn't installed. Run \`bun install\`."
     status=1
     return
   fi
@@ -28,7 +25,7 @@ check() {
   if [ "$sdk" != "$pinned" ]; then
     echo "$plugin: SDK $sdk != PATH plugin $pinned"
     case "$plugin" in
-      git) echo "  the vendored SDK is stale. Run \`vendor-git-sdk\`." ;;
+      git) echo "  the two pins have drifted. Point package.json's @unmango/pulumi-git at the v$pinned release tarball, or \`nix flake update pulumi-provider-git\` to follow the SDK." ;;
       *)   echo "  the two pins have drifted. Run \`bun add @pulumi/$plugin@$pinned\` to follow the plugin, or \`nix flake update pulumipkgs\` to follow the SDK." ;;
     esac
     status=1

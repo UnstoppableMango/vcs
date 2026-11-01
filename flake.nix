@@ -58,12 +58,6 @@
         let
           gitProvider = inputs'.pulumi-provider-git.packages;
 
-          vendorGitSdk = pkgs.writeShellApplication {
-            name = "vendor-git-sdk";
-            runtimeEnv.GIT_SDK_NODEJS = gitProvider.sdk-nodejs;
-            text = builtins.readFile ./scripts/vendor-git-sdk.sh;
-          };
-
           checkPulumiPlugins = pkgs.writeShellApplication {
             name = "check-pulumi-plugins";
             runtimeInputs = [ pkgs.jq ];
@@ -100,11 +94,9 @@
               ++ [
                 gitProvider.default
                 checkPulumiPlugins
-                vendorGitSdk
               ];
 
             shellHook = ''
-              vendor-git-sdk
               check-pulumi-plugins || true
             '';
           };
