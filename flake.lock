@@ -54,11 +54,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787538774,
-        "narHash": "sha256-gLkcvYV//4wj2bsX7OIbDYWZmonX/Es1c+ZQOxg6j1g=",
+        "lastModified": 1793151243,
+        "narHash": "sha256-u+oRqzyFr9/qj5cTLvpJ0LQopmHVLdtHurjtnumgxOA=",
         "owner": "UnstoppableMango",
         "repo": "pulumi-provider-git",
-        "rev": "f09f7ee4322334490fe78fb18f745df1795a3757",
+        "rev": "664e262728f280f4acc05ba60db2f36de0d8bfd7",
         "type": "github"
       },
       "original": {

@@ -8,6 +8,7 @@
         "@pulumi/github": "^6.14.0",
         "@pulumi/gitlab": "10.2.0",
         "@pulumi/pulumi": "^3.226.0",
+        "@unmango/pulumi-git": "https://github.com/UnstoppableMango/pulumi-provider-git/releases/download/v0.0.4/unmango-pulumi-git-0.0.4.tgz",
         "pulumi-components": "github:UnstoppableMango/pulumi-components",
       },
       "devDependencies": {
@@ -184,6 +185,8 @@
     "@typescript/typescript-win32-arm64": ["@typescript/typescript-win32-arm64@7.0.2", "", { "os": "win32", "cpu": "arm64" }, "sha512-Gyl1Vy6OsWesLzmq+EP0Fb7b4Nid5232AvcA2SFcdYreldpNtYFFofPjnt62y9hQy7VTaZp65ICJjuAQRaVcIQ=="],
 
     "@typescript/typescript-win32-x64": ["@typescript/typescript-win32-x64@7.0.2", "", { "os": "win32", "cpu": "x64" }, "sha512-0BQ3HkAHHlKLSp1qRvf3SUhGpGsDuhB/jgFw75guyqbxJqEaS0Cw/VFO8i2nHglJUzQCRtMMR/IBAKE3ETMC4g=="],
+
+    "@unmango/pulumi-git": ["@unmango/pulumi-git@https://github.com/UnstoppableMango/pulumi-provider-git/releases/download/v0.0.4/unmango-pulumi-git-0.0.4.tgz", { "dependencies": { "@pulumi/pulumi": "^3.142.0" } }, "sha512-8jY6rKn1YcfksdqOJwviyNt2xo5LmLlLgqzGbqj5rr2+i8fN36lcmiuZCtwh/CSAJUWmu97HieXMZs7/C9TTIw=="],
 
     "abbrev": ["abbrev@4.0.0", "", {}, "sha512-a1wflyaL0tHtJSmLSOVybYhy22vRih4eduhhrkcjgrWGnRfrZtovJ2FRjxuTtkkj47O/baf0R86QU5OuYpz8fA=="],
 

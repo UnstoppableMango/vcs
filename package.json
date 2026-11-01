@@ -9,6 +9,7 @@
         "@pulumi/github": "^6.14.0",
         "@pulumi/gitlab": "10.2.0",
         "@pulumi/pulumi": "^3.226.0",
+        "@unmango/pulumi-git": "https://github.com/UnstoppableMango/pulumi-provider-git/releases/download/v0.0.4/unmango-pulumi-git-0.0.4.tgz",
         "pulumi-components": "github:UnstoppableMango/pulumi-components"
     },
     "peerDependencies": {
