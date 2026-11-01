@@ -43,6 +43,25 @@ const lang = new PublicRepo("lang", {
 	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
 });
 
+// lang grows toward small milestones grouped into tiers (its README's
+// Milestones section); each tier is a GitHub milestone that the open decisions
+// and ideas attach to.
+const langTiers: Record<string, string> = {
+	a: "A. Hello world",
+	b: "B. Turing complete",
+	c: "C. Data",
+	d: "D. Real programs",
+	e: "E. Bootstrapping",
+};
+
+for (const [key, title] of Object.entries(langTiers)) {
+	new gh.RepositoryMilestone(`lang-tier-${key}`, {
+		owner: "UnstoppableMango",
+		repository: lang.repo.name,
+		title,
+	});
+}
+
 const mangoMtg = new gh.Repository(
 	"mango-mtg",
 	{
