@@ -26,6 +26,10 @@ export const johnstonDems = new PrivateRepo("johnston-dems-mailer", {
 	description: "Johnston Democrats mailing application",
 });
 
+export const keepers = new PrivateRepo("keepers", {
+	description: "Helps Mom curate her photo library down to the keepers",
+});
+
 export const slackerBot = new PublicRepo("slacker-bot", {
 	description: "A Discord bot for the Slackers",
 	topics: ["discord", "bot", "slackers"],
