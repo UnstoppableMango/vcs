@@ -56,6 +56,7 @@ const langTiers: Record<string, string> = {
 
 for (const [key, title] of Object.entries(langTiers)) {
 	new gh.RepositoryMilestone(`lang-tier-${key}`, {
+		owner: "UnstoppableMango",
 		repository: lang.repo.name,
 		title,
 	});
