@@ -1,7 +1,7 @@
-up: node_modules/.installed
+up: plugins
 	pulumi up
 
-preview: node_modules/.installed
+preview: plugins
 	pulumi preview
 
 build:
