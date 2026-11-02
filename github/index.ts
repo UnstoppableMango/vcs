@@ -185,9 +185,20 @@ const labeledRepos: Record<string, unknown> = {
 	theCluster,
 };
 
-// Opt-outs, and labels made by hand that need importing before this program
+// Opt-outs, labels one repository adds, and labels made by hand that need importing before this program
 // can manage them.
-const labelOptions: Record<string, AgentLabelOptions> = {};
+const labelOptions: Record<string, AgentLabelOptions> = {
+	// The code reduction routine's pinned targets issue, which triage skips
+	// (tdl's docs/agents/routines.md).
+	tdl: {
+		extraLabels: {
+			"routine:targets": {
+				color: "5319e7",
+				description: "The code reduction routine's ranked targets",
+			},
+		},
+	},
+};
 
 const isLabeledRepo = (x: unknown): x is LabeledRepo =>
 	x instanceof PublicRepo ||
