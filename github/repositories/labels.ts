@@ -58,13 +58,15 @@ export type LabeledRepo = PublicRepo | PrivateRepo | gh.Repository;
 export interface AgentLabelOptions {
 	triageLabels?: boolean;
 	wayfinderLabels?: boolean;
+	/** Labels only this repository uses, keyed by name. */
+	extraLabels?: Record<string, Label>;
 	/** Import IDs (`<repo>:<label>`) of labels made by hand, keyed by label. */
 	imports?: Record<string, string>;
 }
 
 /**
  * Adds the labels the agent skills apply: the triage states and the wayfinder
- * ticket types.
+ * ticket types, plus any the repository adds of its own.
  */
 export function addAgentLabels(
 	prefix: string,
@@ -75,6 +77,7 @@ export function addAgentLabels(
 	const labels = {
 		...(opts.triageLabels === false ? {} : triageLabels),
 		...(opts.wayfinderLabels === false ? {} : wayfinderLabels),
+		...opts.extraLabels,
 	};
 	for (const [name, args] of Object.entries(labels)) {
 		const id = opts.imports?.[name];
