@@ -1,0 +1,225 @@
+<!doctype html>
+<!--
+  PROTOTYPE, throw me away. Answers vcs#119 "Sketch the public landing page and repo list".
+  Three structurally different landing pages for knot.thecluster.io, switchable via ?variant=A|B|C
+  (or the floating bar / arrow keys). One self-contained file, the way the knot serves it.
+
+  Data: served from knot.thecluster.io it tries the real same-origin XRPC
+  (sh.tangled.sync.listRepos + sh.tangled.repo.describeRepo) and the owner's PDS
+  (com.atproto.repo.listRecords on sh.tangled.repo). Anywhere else, or on any error,
+  it falls back to MOCK data shaped like those responses. The repos in the mock are
+  first movers from the on-prem plan, not what the knot hosts today.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>knot.thecluster.io</title>
+<style>
+  :root {
+    --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a65; --line: #e4e1d8; --card: #ffffff;
+    --accent: #2f6f5e; --accent-fg: #ffffff; --chip: #eef3f0;
+    --mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #141513; --fg: #e8e6df; --muted: #9a988f; --line: #2b2c28; --card: #1b1c19;
+            --accent: #7cc3ad; --accent-fg: #0d1a16; --chip: #20302a; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.5 var(--sans); }
+  a { color: var(--accent); }
+  code, pre, .mono { font-family: var(--mono); }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 32px 16px 120px; }
+  .chip { display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--chip); font-size: 12px; margin: 2px 4px 2px 0; }
+  .muted { color: var(--muted); }
+  .src { font-size: 12px; color: var(--muted); }
+
+  /* ---- Variant A: terminal / MOTD ---- */
+  .vA { font-family: var(--mono); font-size: 14px; overflow-x: auto; }
+  .vA pre { white-space: pre-wrap; margin: 0 0 24px; }
+  .vA table { border-collapse: collapse; width: 100%; }
+  .vA td { padding: 3px 12px 3px 0; vertical-align: top; }
+  .vA tr:hover td { background: var(--chip); }
+  .vA .prompt { color: var(--accent); }
+
+  /* ---- Variant B: searchable directory ---- */
+  .vB header { display: flex; gap: 16px; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+  .vB .avatar { width: 48px; height: 48px; border-radius: 10px; background: var(--accent); color: var(--accent-fg); display: grid; place-items: center; font-weight: 700; }
+  .vB .tools { display: flex; gap: 8px; margin: 16px 0; flex-wrap: wrap; }
+  .vB input, .vB select { font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--fg); }
+  .vB input { flex: 1; min-width: 200px; }
+  .vB .row { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .vB .row h3 { margin: 0; font-size: 16px; }
+  .vB .row .links { text-align: right; font-size: 13px; white-space: nowrap; }
+  .vB .row .meta { grid-column: 1 / -1; font-size: 13px; }
+
+  /* ---- Variant C: operator profile + how-to ---- */
+  .vC .hero { padding: 48px 0 32px; }
+  .vC .hero h1 { font-size: clamp(32px, 6vw, 56px); line-height: 1.05; margin: 0 0 12px; letter-spacing: -0.02em; }
+  .vC .hero p { font-size: 18px; max-width: 60ch; }
+  .vC .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .vC .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+  .vC .card h3 { margin: 0 0 6px; }
+  .vC h2 { margin: 40px 0 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  .vC .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .vC .steps pre { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; font-size: 13px; }
+  .vC .index { columns: 2 220px; }
+  .vC .index a { display: block; padding: 2px 0; }
+
+  /* ---- prototype switcher, not part of the design ---- */
+  #pswitch { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 99;
+             display: flex; align-items: center; gap: 4px; padding: 6px; border-radius: 999px;
+             background: #111; color: #fff; box-shadow: 0 6px 24px rgba(0,0,0,.35); font: 13px var(--sans); }
+  #pswitch button { all: unset; cursor: pointer; padding: 6px 12px; border-radius: 999px; }
+  #pswitch button:hover { background: #333; }
+  #pswitch span { padding: 0 10px; white-space: nowrap; }
+  #pswitch em { font-style: normal; opacity: .6; margin-left: 8px; }
+</style>
+</head>
+<body>
+<div id="app" class="wrap"></div>
+<div id="pswitch" aria-label="Prototype switcher (not part of the design)">
+  <button id="prev" title="Previous variant (←)">◀</button><span id="plabel"></span><button id="next" title="Next variant (→)">▶</button>
+</div>
+<script>
+const KNOT = "knot.thecluster.io";
+const OWNER = { did: "did:plc:npefy3bubltqewdfhah5i5ef", handle: "unmango.dev (mock handle)" };
+
+// MOCK, shaped like listRepos + describeRepo + PDS sh.tangled.repo records.
+const MOCK = [
+  { did: "did:plc:mockcairn", rkey: "3lcairn", name: "cairn", defaultBranch: "main", head: "a1b2c3d",
+    description: "NixOS/clan library for running Kubernetes", topics: ["kubernetes", "nix", "clan"],
+    website: "https://github.com/UnstoppableMango/cairn", pushed: "2026-11-01" },
+  { did: "did:plc:mockinoc", rkey: "3linoc", name: "inoculant", defaultBranch: "main", head: "9f8e7d6",
+    description: "Seeds a fresh cluster with the bits it needs to take over", topics: ["kubernetes", "bootstrap"],
+    website: "https://github.com/UnstoppableMango/inoculant", pushed: "2026-10-28" },
+  { did: "did:plc:mocktcio", rkey: "3ltcio", name: "thecluster.io", defaultBranch: "main", head: "1234abc",
+    description: "Public site for THECLUSTER", topics: ["web"],
+    website: "https://github.com/UnstoppableMango/thecluster.io", pushed: "2026-10-20" },
+  { did: "did:plc:mocktcl", rkey: "3ltcl", name: "the-cluster", defaultBranch: "main", head: "beefcafe",
+    description: "Flux repo for rosequartz", topics: ["kubernetes", "flux", "gitops"],
+    website: "https://github.com/UnstoppableMango/the-cluster", pushed: "2026-11-03" },
+  { did: "did:plc:mockpki", rkey: "3lpki", name: "pki", defaultBranch: "main", head: "c0ffee1",
+    description: "Certificate authority for the homelab", topics: ["pki", "pulumi"],
+    website: "", pushed: "2026-09-30" },
+];
+
+let source = "mock";
+async function load() {
+  if (location.hostname !== KNOT) return MOCK;
+  try {
+    const xrpc = (m, q) => fetch(`/xrpc/${m}?${new URLSearchParams(q)}`).then(r => { if (!r.ok) throw r.status; return r.json(); });
+    const { repos = [] } = await xrpc("sh.tangled.sync.listRepos", { limit: 100 });
+    // N+1 against a burst-20 rate limit; fine for a handful of repos, see #116.
+    const described = await Promise.all(repos.map(r => xrpc("sh.tangled.repo.describeRepo", { repoDid: r.did }).then(d => ({ ...r, ...d }))));
+    // Unverified: PDS CORS. Hard-coded owner PDS is the fallback (#123).
+    let records = {};
+    try {
+      const pds = await fetch(`https://plc.directory/${OWNER.did}`).then(r => r.json()).then(d => d.service?.[0]?.serviceEndpoint);
+      const res = await fetch(`${pds}/xrpc/com.atproto.repo.listRecords?repo=${OWNER.did}&collection=sh.tangled.repo&limit=100`).then(r => r.json());
+      for (const rec of res.records ?? []) records[rec.uri.split("/").pop()] = rec.value;
+    } catch {}
+    source = "live";
+    return described.map(r => ({ ...r, ...(records[r.rkey] ?? {}), name: records[r.rkey]?.name ?? r.rkey, head: (r.head ?? "").slice(0, 8) }));
+  } catch { return MOCK; }
+}
+
+const tangled = r => `https://tangled.org/${OWNER.did}/${r.name}`;
+const mirror = r => (r.website || "").startsWith("https://github.com/") ? r.website : "";
+const clone = r => `git clone https://${KNOT}/${OWNER.did}/${r.name}`;
+const chips = r => (r.topics || []).map(t => `<span class="chip">${t}</span>`).join("");
+const srcNote = () => `<p class="src">Data: ${source === "live" ? "live from this knot" : "MOCK (not served from " + KNOT + ")"}.</p>`;
+
+// ---- Variant A: an SSH-banner / MOTD page. Text first, everything is a command.
+function VariantA(repos) {
+  return `<div class="vA">
+<pre>
+ _               _
+| | ___ __   ___ | |_     ${KNOT}
+| |/ / '_ \\ / _ \\| __|    a Tangled knot on THECLUSTER
+|   <| | | | (_) | |_     operated by ${OWNER.handle}
+|_|\\_\\_| |_|\\___/ \\__|    ${repos.length} repositories, admission: closed
+
+This is a git host on Tangled, a network of federated servers.
+Issues and pull requests live on <a href="https://tangled.org">tangled.org</a>; public repos are mirrored to GitHub.
+</pre>
+<pre><span class="prompt">$</span> ls -l /repos</pre>
+<table>${repos.map(r => `<tr>
+  <td>${r.head}</td><td>${r.pushed ?? ""}</td>
+  <td><a href="${tangled(r)}">${r.name}/</a></td>
+  <td class="muted"># ${r.description ?? ""}</td>
+  <td>${mirror(r) ? `<a href="${mirror(r)}">[github]</a>` : ""}</td></tr>`).join("")}
+</table>
+<pre>
+<span class="prompt">$</span> ${repos[0] ? clone(repos[0]) : "git clone ..."}
+<span class="prompt">$</span> login   <span class="muted"># operator only</span>
+</pre>
+${srcNote()}</div>`;
+}
+
+// ---- Variant B: a searchable directory. The list is the page.
+function VariantB(repos) {
+  const topics = [...new Set(repos.flatMap(r => r.topics || []))].sort();
+  return `<div class="vB">
+<header><div class="avatar">TC</div><div><strong>${KNOT}</strong><div class="muted">A Tangled knot run by ${OWNER.handle} for THECLUSTER</div></div>
+<div style="margin-left:auto"><button disabled title="atproto login, see #121">Log in</button></div></header>
+<div class="tools"><input id="q" placeholder="Filter ${repos.length} repositories…"><select id="t"><option value="">All topics</option>${topics.map(t => `<option>${t}</option>`).join("")}</select>
+<select id="s"><option value="pushed">Recently pushed</option><option value="name">Name</option></select></div>
+<div id="list"></div>${srcNote()}</div>`;
+}
+function wireB(repos) {
+  const q = document.getElementById("q"), t = document.getElementById("t"), s = document.getElementById("s");
+  const render = () => {
+    const rows = repos.filter(r => (!q.value || (r.name + " " + (r.description || "")).toLowerCase().includes(q.value.toLowerCase()))
+                                 && (!t.value || (r.topics || []).includes(t.value)))
+      .sort((a, b) => s.value === "name" ? a.name.localeCompare(b.name) : (b.pushed || "").localeCompare(a.pushed || ""));
+    document.getElementById("list").innerHTML = rows.map(r => `<div class="row">
+      <div><h3><a href="${tangled(r)}">${r.name}</a></h3><div>${r.description ?? ""}</div></div>
+      <div class="links"><a href="${tangled(r)}">tangled</a>${mirror(r) ? ` · <a href="${mirror(r)}">github mirror</a>` : ""}</div>
+      <div class="meta muted">${chips(r)} ${r.defaultBranch} @ <code>${r.head}</code> · pushed ${r.pushed ?? "?"}</div></div>`).join("") || `<p class="muted">No matches.</p>`;
+  };
+  [q, t, s].forEach(el => el.addEventListener("input", render)); render();
+}
+
+// ---- Variant C: operator profile and "how to use this knot", repos are secondary.
+function VariantC(repos) {
+  const featured = repos.slice(0, 3);
+  return `<div class="vC">
+<section class="hero"><p class="muted mono">${KNOT}</p><h1>THECLUSTER's knot.</h1>
+<p>Home for ${OWNER.handle}'s homelab and infrastructure code, self-hosted on Tangled. Browse here, collaborate on tangled.org, or use the GitHub mirrors.</p></section>
+<h2>Featured</h2><div class="grid">${featured.map(r => `<div class="card"><h3><a href="${tangled(r)}">${r.name}</a></h3><div>${r.description ?? ""}</div><div style="margin-top:8px">${chips(r)}</div>
+<div class="src" style="margin-top:8px">${mirror(r) ? `<a href="${mirror(r)}">GitHub mirror</a>` : "on-prem only"}</div></div>`).join("")}</div>
+<h2>Use this knot</h2><div class="steps">
+<div><strong>Clone</strong><pre>${featured[0] ? clone(featured[0]) : ""}</pre></div>
+<div><strong>Contribute</strong><p>Open issues and pulls on <a href="https://tangled.org">tangled.org</a>. PRs on GitHub mirrors are closed with a pointer back here.</p></div>
+<div><strong>Run your own</strong><p>This knot runs <a href="https://tangled.org/tangled.org/core">knot-rs</a> from the <a href="https://github.com/unmango/charts">unmango/charts</a> Helm chart.</p></div></div>
+<h2>All ${repos.length} repositories</h2><div class="index">${repos.map(r => `<a href="${tangled(r)}">${r.name}</a>`).join("")}</div>
+<p class="src" style="margin-top:32px">Operator? <a href="#" onclick="return false" title="atproto login, see #121">Log in</a></p>${srcNote()}</div>`;
+}
+
+const VARIANTS = { A: ["Terminal banner", VariantA], B: ["Searchable directory", VariantB], C: ["Operator profile", VariantC] };
+const keys = Object.keys(VARIANTS);
+let repos = [];
+function show() {
+  const v = new URLSearchParams(location.search).get("variant") ?? "A";
+  const key = VARIANTS[v] ? v : "A";
+  document.getElementById("app").innerHTML = VARIANTS[key][1](repos);
+  if (key === "B") wireB(repos);
+  document.getElementById("plabel").innerHTML = `${key} (${VARIANTS[key][0]})<em>prototype</em>`;
+}
+function go(d) {
+  const cur = new URLSearchParams(location.search).get("variant") ?? "A";
+  const next = keys[(keys.indexOf(cur) + d + keys.length) % keys.length];
+  const u = new URL(location); u.searchParams.set("variant", next); history.replaceState(null, "", u); show();
+}
+document.getElementById("prev").onclick = () => go(-1);
+document.getElementById("next").onclick = () => go(1);
+addEventListener("keydown", e => {
+  if (e.target.closest("input, textarea, select, [contenteditable]")) return;
+  if (e.key === "ArrowLeft") go(-1); if (e.key === "ArrowRight") go(1);
+});
+load().then(r => { repos = r; show(); });
+</script>
+</body>
+</html>
