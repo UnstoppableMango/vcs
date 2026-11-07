@@ -19,9 +19,9 @@ The **Seed** stays, hosted at `scm/seed`. It owns the `scm` org and both of its 
 
 ## Consequences
 
-- When a repository moves its **Home** to the forge, its GitHub repository moves from vcs to the **Forge program** in the same change: import it into the **Forge program**, then `pulumi state delete` it from vcs. Both previews must show zero deletes. scm's existing Gitea resources move the same way.
+- When a repository moves its **Home** to the forge, its GitHub repository moves from vcs to the **Forge program** in the same change, together with its children (ruleset, labels): import them into the **Forge program**, then remove them from vcs's state without deleting them, running `pulumi state unprotect` first on any that are protected. Both previews must show zero deletes. scm's existing Gitea resources move the same way.
 - The **Seed** mints the `pulumi` user's token and writes it to Key Vault `unstoppablemango-pulumi`. The **Forge program** reads it through an ExternalSecret. A StackReference would need the two stacks to share a passphrase (or the **Seed** would need a Key Vault secrets provider), which would let anything that runs the **Forge program** decrypt the **Seed**'s state.
-- GitHub **Mirrors** under both owners use one classic PAT from the same Key Vault, because GitHub App tokens can't manage repositories that belong to a user.
+- GitHub **Mirrors** under both owners use one classic PAT from the same Key Vault, because a GitHub App installation token can't create a repository under a user account (`POST /user/repos` needs a user token).
 - Both programs run as PKO Stacks and keep their state in the shared B2 bucket under their own keys. The **Forge program** is TS/bun, so scm's `gitea/` code ports over directly. The **Seed** keeps the forge-seed design's choice: Pulumi YAML if the PKO image has the plugin, otherwise TS.
 - Both programs use `@sapslaj/pulumi-gitea` until the mirror chain needs something it lacks.
 - Neither `scm/seed` nor `scm/self` has a GitHub **Mirror** for now.

@@ -25,14 +25,14 @@ The small program, hosted on the on-prem **Forge**, that creates what the **Forg
 _Avoid_: bootstrap repo
 
 **Forge program**:
-The program, hosted on the on-prem **Forge**, that declares every repository with a copy there, together with that repository's **Home** and **Mirrors** wherever they are.
+The program, hosted on the on-prem **Forge**, that declares every repository with a copy there, together with that repository's **Home** and **Mirrors** wherever they are, except the **Seed**'s repository and its own, which the **Seed** declares.
 
 ## Relationships
 
 - Every repository has one **Home** and zero or more **Mirrors**, declared together in one place
 - A **Mirror** never takes pushes or pull requests; a pull request opened on one is closed with a pointer to the **Home**
 - A private repository has no **Mirror**
-- A repository with no copy on the on-prem **Forge** stays with the program for its GitHub owner (vcs or unmango/scm); one with a copy there, as its **Home** or as a **Mirror hub** copy, is declared in the **Forge program**
+- A repository with no copy on the on-prem **Forge** stays where it is: in vcs if its **Home** is gitlab.com, otherwise in the program for its GitHub owner (vcs or unmango/scm); one with a copy there, as its **Home** or as a **Mirror hub** copy, is declared in the **Forge program**
 - The **Seed** declares its own repository and the **Forge program**'s repository; the **Forge program** declares neither
 
 ## Flagged ambiguities
