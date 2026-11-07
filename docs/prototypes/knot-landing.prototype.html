@@ -67,6 +67,30 @@
   .vC .index { columns: 2 220px; }
   .vC .index a { display: block; padding: 2px 0; }
 
+  /* ---- Variant D: C's hero over B's list, gem cluster + knots theme ---- */
+  .vD { --rose: #e8a3b5; --rose-deep: #b4546f; --core: #3a1f2b; }
+  @media (prefers-color-scheme: dark) { .vD { --rose: #f0b6c6; --rose-deep: #e07d99; --core: #f7dde4; } }
+  .vD .hero { display: grid; grid-template-columns: 1fr minmax(180px, 280px); gap: 24px; align-items: center; padding: 40px 0 24px; }
+  @media (max-width: 640px) { .vD .hero { grid-template-columns: 1fr; } .vD .hero svg { max-width: 200px; } }
+  .vD .hero h1 { font-size: clamp(30px, 5.5vw, 52px); line-height: 1.05; margin: 0 0 12px; letter-spacing: -0.02em; }
+  .vD .hero h1 span { color: var(--rose-deep); }
+  .vD .hero p { font-size: 17px; max-width: 56ch; margin: 0 0 10px; }
+  .vD h2 { margin: 36px 0 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+  .vD .facets { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .vD .facet { background: var(--card); border: 1px solid var(--line); padding: 16px 18px;
+               clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px); }
+  .vD .facet h3 { margin: 0 0 4px; }
+  .vD .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; font-size: 14px; }
+  .vD .steps pre { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; overflow-x: auto; font-size: 12px; }
+  .vD .tools { display: flex; gap: 8px; margin: 0 0 8px; flex-wrap: wrap; }
+  .vD input, .vD select { font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--fg); }
+  .vD input { flex: 1; min-width: 200px; }
+  .vD .row { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; padding: 12px 0; border-bottom: 1px dashed var(--line); }
+  .vD .row h3 { margin: 0; font-size: 16px; }
+  .vD .row .links { text-align: right; font-size: 13px; white-space: nowrap; }
+  .vD .row .meta { grid-column: 1 / -1; font-size: 13px; }
+  .vD .copyalt { font-size: 13px; color: var(--muted); border-left: 3px solid var(--rose); padding-left: 10px; margin-top: 14px; }
+
   /* ---- prototype switcher, not part of the design ---- */
   #pswitch { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 99;
              display: flex; align-items: center; gap: 4px; padding: 6px; border-radius: 999px;
@@ -89,7 +113,7 @@ const OWNER = { did: "did:plc:npefy3bubltqewdfhah5i5ef", handle: "unmango.dev (m
 // MOCK, shaped like listRepos + describeRepo + PDS sh.tangled.repo records.
 const MOCK = [
   { did: "did:plc:mockcairn", rkey: "3lcairn", name: "cairn", defaultBranch: "main", head: "a1b2c3d",
-    description: "NixOS/clan library for running Kubernetes", topics: ["kubernetes", "nix", "clan"],
+    description: "NixOS/clan library for running Kubernetes", topics: ["kubernetes", "nix", "clan", "featured"],
     website: "https://github.com/UnstoppableMango/cairn", pushed: "2026-11-01" },
   { did: "did:plc:mockinoc", rkey: "3linoc", name: "inoculant", defaultBranch: "main", head: "9f8e7d6",
     description: "Seeds a fresh cluster with the bits it needs to take over", topics: ["kubernetes", "bootstrap"],
@@ -98,7 +122,7 @@ const MOCK = [
     description: "Public site for THECLUSTER", topics: ["web"],
     website: "https://github.com/UnstoppableMango/thecluster.io", pushed: "2026-10-20" },
   { did: "did:plc:mocktcl", rkey: "3ltcl", name: "the-cluster", defaultBranch: "main", head: "beefcafe",
-    description: "Flux repo for rosequartz", topics: ["kubernetes", "flux", "gitops"],
+    description: "Flux repo for rosequartz", topics: ["kubernetes", "flux", "gitops", "featured"],
     website: "https://github.com/UnstoppableMango/the-cluster", pushed: "2026-11-03" },
   { did: "did:plc:mockpki", rkey: "3lpki", name: "pki", defaultBranch: "main", head: "c0ffee1",
     description: "Certificate authority for the homelab", topics: ["pki", "pulumi"],
@@ -198,7 +222,49 @@ function VariantC(repos) {
 <p class="src" style="margin-top:32px">Operator? <a href="#" onclick="return false" title="atproto login, see #121">Log in</a></p>${srcNote()}</div>`;
 }
 
-const VARIANTS = { A: ["Terminal banner", VariantA], B: ["Searchable directory", VariantB], C: ["Operator profile", VariantC] };
+
+// ---- Variant D: C's hero and "use this knot" over B's filterable list, themed as a gem cluster
+// growing in the core, bound up in Tangled's knots. Featured = repos with the `featured` topic.
+const GEM = `<svg viewBox="0 0 200 200" role="img" aria-label="A rose quartz crystal cluster wrapped in knotted strands">
+  <g stroke="var(--rose-deep)" stroke-width="1.5" stroke-linejoin="round">
+    <polygon points="100,18 128,70 100,150 72,70" fill="var(--rose)" />
+    <polygon points="100,18 128,70 100,150" fill="var(--rose-deep)" opacity=".35" />
+    <polygon points="60,60 82,96 66,160 44,100" fill="var(--rose)" opacity=".85" />
+    <polygon points="142,54 162,96 144,162 124,98" fill="var(--rose)" opacity=".85" />
+    <polygon points="142,54 162,96 144,162" fill="var(--rose-deep)" opacity=".3" />
+  </g>
+  <g fill="none" stroke="var(--core)" stroke-width="2.5" stroke-linecap="round" opacity=".8">
+    <path d="M10,150 C50,120 70,190 100,160 S150,110 190,150" />
+    <path d="M10,170 C60,200 80,120 100,150 S140,200 190,165" />
+    <path d="M30,185 C60,140 140,140 170,185" />
+    <circle cx="100" cy="156" r="7" />
+  </g>
+</svg>`;
+function VariantD(repos) {
+  const featured = repos.filter(r => (r.topics || []).includes("featured"));
+  const topics = [...new Set(repos.flatMap(r => r.topics || []))].filter(t => t !== "featured").sort();
+  return `<div class="vD">
+<section class="hero"><div><p class="muted mono">${KNOT}</p>
+<h1>Something is growing<br>under <span>rosequartz</span>.</h1>
+<p>This is THECLUSTER's knot, run by ${OWNER.handle}. Every repository here is a strand, and Tangled ties them into the wider network.</p>
+<p class="muted">Browse below, open issues and pulls on <a href="https://tangled.org">tangled.org</a>, or follow the GitHub mirrors.</p>
+<div class="copyalt">Alt copy to react to: <em>"Deep in the core, the cluster is forming."</em> / <em>"A knot of repos, wound tight around THECLUSTER."</em></div></div>
+${GEM}</section>
+${featured.length ? `<h2>Featured</h2><div class="facets">${featured.map(r => `<div class="facet"><h3><a href="${tangled(r)}">${r.name}</a></h3><div>${r.description ?? ""}</div>
+<div style="margin-top:8px">${chips({ topics: (r.topics || []).filter(t => t !== "featured") })}</div>
+<div class="src" style="margin-top:6px">${mirror(r) ? `<a href="${mirror(r)}">GitHub mirror</a>` : "on-prem only"}</div></div>`).join("")}</div>` : ""}
+<h2>Use this knot</h2><div class="steps">
+<div><strong>Clone</strong><pre>${repos[0] ? clone(repos[0]) : ""}</pre></div>
+<div><strong>Contribute</strong><p>Issues and pulls live on <a href="https://tangled.org">tangled.org</a>. PRs on GitHub mirrors get closed with a pointer back here.</p></div>
+<div><strong>Grow your own</strong><p>This knot runs knot-rs from the <a href="https://github.com/unmango/charts">unmango/charts</a> Helm chart.</p></div></div>
+<h2>All ${repos.length} strands</h2>
+<div class="tools"><input id="q" placeholder="Filter repositories…"><select id="t"><option value="">All topics</option>${topics.map(t => `<option>${t}</option>`).join("")}</select>
+<select id="s"><option value="pushed">Recently pushed</option><option value="name">Name</option></select></div>
+<div id="list"></div>
+<p class="src" style="margin-top:28px">Operator? <a href="#" onclick="return false" title="atproto login, see #121">Log in</a></p>${srcNote()}</div>`;
+}
+
+const VARIANTS = { A: ["Terminal banner", VariantA], B: ["Searchable directory", VariantB], C: ["Operator profile", VariantC], D: ["Rose quartz cluster (B + C)", VariantD] };
 const keys = Object.keys(VARIANTS);
 let repos = [];
 // The app previews files in a sandboxed about:srcdoc iframe where history.replaceState throws,
@@ -208,7 +274,7 @@ function show() {
   const v = current;
   const key = VARIANTS[v] ? v : "A";
   document.getElementById("app").innerHTML = VARIANTS[key][1](repos);
-  if (key === "B") wireB(repos);
+  if (key === "B" || key === "D") wireB(repos);
   document.getElementById("plabel").innerHTML = `${key} (${VARIANTS[key][0]})<em>prototype</em>`;
 }
 function go(d) {
