@@ -201,17 +201,22 @@ function VariantC(repos) {
 const VARIANTS = { A: ["Terminal banner", VariantA], B: ["Searchable directory", VariantB], C: ["Operator profile", VariantC] };
 const keys = Object.keys(VARIANTS);
 let repos = [];
+// The app previews files in a sandboxed about:srcdoc iframe where history.replaceState throws,
+// so the current variant lives in memory and the URL is only updated when the browser allows it.
+let current = new URLSearchParams(location.search).get("variant") ?? "A";
 function show() {
-  const v = new URLSearchParams(location.search).get("variant") ?? "A";
+  const v = current;
   const key = VARIANTS[v] ? v : "A";
   document.getElementById("app").innerHTML = VARIANTS[key][1](repos);
   if (key === "B") wireB(repos);
   document.getElementById("plabel").innerHTML = `${key} (${VARIANTS[key][0]})<em>prototype</em>`;
 }
 function go(d) {
-  const cur = new URLSearchParams(location.search).get("variant") ?? "A";
+  const cur = current;
   const next = keys[(keys.indexOf(cur) + d + keys.length) % keys.length];
-  const u = new URL(location); u.searchParams.set("variant", next); history.replaceState(null, "", u); show();
+  current = next;
+  try { const u = new URL(location); u.searchParams.set("variant", next); history.replaceState(null, "", u); } catch {}
+  show();
 }
 document.getElementById("prev").onclick = () => go(-1);
 document.getElementById("next").onclick = () => go(1);
