@@ -134,7 +134,10 @@ export const travel = new PublicRepo("travel", {
 	requiredChecks: [{ context: "check", integrationId: integrationIds.github }],
 });
 
-addMainRuleset("dotfiles", dotfiles.name, { requiredChecks: [] });
+addMainRuleset("dotfiles", dotfiles.name, {
+	requiredChecks: [],
+	rules: { pullRequest: undefined },
+});
 addMainRuleset("unstoppablemango.io", unstoppablemango_io.name, {
 	requiredChecks: [],
 });
