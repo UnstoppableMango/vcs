@@ -218,7 +218,8 @@ const keys = Object.keys(VARIANTS);
 let current = new URLSearchParams(location.search).get("variant") ?? "A";
 // In the app's sandboxed srcdoc preview, "#/..." links resolve against the parent URL and navigate away,
 // so links are intercepted and the route lives in memory; location.hash is only mirrored when allowed.
-let currentHash = location.hash;
+// Opens straight into cairn: the three layouts only differ inside a repo. The gem or hostname goes back to the landing page.
+let currentHash = location.hash || "#/cairn";
 function nav(h) { currentHash = h; try { if (location.href.startsWith("about:srcdoc") || location.protocol !== "about:") history.replaceState(null, "", h); } catch {} show(); scrollTo(0, 0); }
 document.addEventListener("click", e => { const a = e.target.closest('a[href^="#"]'); if (!a || a.getAttribute("href") === "#") return; e.preventDefault(); nav(a.getAttribute("href")); });
 document.addEventListener("change", e => { const s = e.target.closest("select[data-nav]"); if (s) nav(s.dataset.nav.replace("REF", s.value)); });
@@ -231,7 +232,7 @@ function route() {
 function show() {
   const key = VARIANTS[current] ? current : "A", r = route();
   document.getElementById("app").innerHTML = r ? VARIANTS[key][1](r) : landing();
-  document.getElementById("plabel").innerHTML = `${key} (${VARIANTS[key][0]})<em>prototype</em>`;
+  document.getElementById("plabel").innerHTML = r ? `${key} (${VARIANTS[key][0]})<em>prototype</em>` : `Landing page (same in A/B/C) · open a repo<em>prototype</em>`;
 }
 function go(d) { current = keys[(keys.indexOf(VARIANTS[current] ? current : "A") + d + keys.length) % keys.length];
   try { const u = new URL(location); u.searchParams.set("variant", current); history.replaceState(null, "", u); } catch {} show(); }
