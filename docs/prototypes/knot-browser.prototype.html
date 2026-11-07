@@ -1,0 +1,244 @@
+<!doctype html>
+<!--
+  PROTOTYPE, throw me away. Answers vcs#120 "Sketch the read-only repo browser".
+  Builds on the locked landing page (vcs#119, variant D). Click a repo in the list to enter the browser.
+  Three browser layouts, switchable via the floating bar / arrow keys (?variant=A|B|C, kept in memory
+  when the preview sandbox blocks URL changes). Navigation is hash routes, because the knot serves only `/`:
+
+    #/                              landing
+    #/<repo>                        repo home (default branch)
+    #/<repo>/tree/<ref>/<path>      directory
+    #/<repo>/blob/<ref>/<path>      file
+    #/<repo>/log/<ref>              commit log
+    #/<repo>/branches               branches
+
+  Data is MOCK, shaped like sh.tangled.repo.tree / blob / log / branches (lexicons/repo/*.json).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>knot.thecluster.io</title>
+<style>
+  :root {
+    --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a65; --line: #e4e1d8; --card: #ffffff; --chip: #f6e9ed;
+    --rose: #e8a3b5; --rose-deep: #b4546f; --core: #3a1f2b; --accent: #b4546f;
+    --mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #141513; --fg: #e8e6df; --muted: #9a988f; --line: #2b2c28; --card: #1b1c19; --chip: #33222a;
+            --rose: #f0b6c6; --rose-deep: #e07d99; --core: #f7dde4; --accent: #e07d99; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.5 var(--sans); }
+  a { color: var(--accent); text-decoration: none; } a:hover { text-decoration: underline; }
+  code, pre, .mono { font-family: var(--mono); }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 24px 16px 120px; }
+  .muted { color: var(--muted); } .small { font-size: 13px; }
+  .chip { display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--chip); font-size: 12px; margin: 2px 4px 2px 0; }
+  .topbar { display: flex; align-items: center; gap: 10px; padding-bottom: 14px; border-bottom: 1px solid var(--line); margin-bottom: 18px; flex-wrap: wrap; }
+  .topbar .gem { width: 22px; height: 22px; }
+  .crumbs { font-family: var(--mono); font-size: 14px; overflow-wrap: anywhere; }
+  table.files { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.files td { padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.files td.msg { color: var(--muted); }
+  table.files td.when { color: var(--muted); white-space: nowrap; text-align: right; }
+  @media (max-width: 640px) { table.files td.msg { display: none; } }
+  .box { background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .box > header { padding: 8px 12px; border-bottom: 1px solid var(--line); font-size: 13px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .readme { padding: 16px 20px; } .readme h1 { font-size: 22px; margin-top: 0; } .readme h2 { font-size: 17px; }
+  pre.code { margin: 0; padding: 12px 0; overflow-x: auto; font-size: 13px; counter-reset: ln; }
+  pre.code span { display: block; padding: 0 14px; } pre.code span::before { counter-increment: ln; content: counter(ln); display: inline-block; width: 3ch; margin-right: 14px; text-align: right; color: var(--muted); }
+  .commit { padding: 10px 12px; border-bottom: 1px solid var(--line); display: flex; gap: 12px; justify-content: space-between; }
+  .commit:last-child { border-bottom: 0; }
+  select, button { font: inherit; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--fg); }
+  .clone { font-family: var(--mono); font-size: 12px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); overflow-x: auto; white-space: nowrap; max-width: 100%; }
+
+  /* landing (variant D, trimmed) */
+  .hero { display: grid; grid-template-columns: 1fr minmax(140px, 220px); gap: 20px; align-items: center; padding: 20px 0; }
+  @media (max-width: 640px) { .hero { grid-template-columns: 1fr; } .hero svg { max-width: 160px; } }
+  .hero h1 { font-size: clamp(28px, 5vw, 46px); line-height: 1.05; margin: 0 0 10px; letter-spacing: -0.02em; } .hero h1 span { color: var(--rose-deep); }
+  .row { display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; padding: 12px 0; border-bottom: 1px dashed var(--line); }
+  .row h3 { margin: 0; font-size: 16px; } .row .links { font-size: 13px; text-align: right; white-space: nowrap; }
+
+  /* A: tabbed repo page */
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin: 14px 0 16px; overflow-x: auto; }
+  .tabs a { padding: 8px 14px; border-bottom: 2px solid transparent; color: var(--fg); white-space: nowrap; }
+  .tabs a.on { border-color: var(--rose-deep); font-weight: 600; }
+
+  /* B: split pane */
+  .split { display: grid; grid-template-columns: 260px 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
+  .split > * { min-width: 0; } .tree { position: static; }
+  @media (min-width: 761px) { .tree { position: sticky; } }
+  .tree { font-family: var(--mono); font-size: 13px; padding: 8px 0; position: sticky; top: 8px; max-height: 80vh; overflow: auto; }
+  .tree a { display: block; padding: 2px 12px; color: var(--fg); white-space: nowrap; } .tree a.on { background: var(--chip); }
+  .tree .d { color: var(--rose-deep); }
+
+  /* C: cgit-like summary */
+  .vC { font-family: var(--mono); font-size: 14px; }
+  .vC nav a { margin-right: 14px; } .vC nav a.on { font-weight: 700; text-decoration: underline; }
+  .vC h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 24px 0 8px; }
+  .vC table { border-collapse: collapse; width: 100%; } .vC td { overflow-wrap: anywhere; }
+  @media (max-width: 640px) { .vC td:nth-child(3), .vC td:nth-child(4) { display: none; } } .vC td { padding: 3px 14px 3px 0; vertical-align: top; }
+  .vC .readme { font-family: var(--sans); border-left: 3px solid var(--rose); padding: 4px 18px; min-width: 0; }
+  .vC > div:last-child, .vC pre.code { overflow-x: auto; } .vC { overflow-wrap: anywhere; }
+
+  #pswitch { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 99; display: flex; align-items: center; gap: 4px; padding: 6px; border-radius: 999px; background: #111; color: #fff; box-shadow: 0 6px 24px rgba(0,0,0,.35); font: 13px var(--sans); }
+  #pswitch button { all: unset; cursor: pointer; padding: 6px 12px; border-radius: 999px; } #pswitch button:hover { background: #333; }
+  #pswitch span { padding: 0 10px; white-space: nowrap; } #pswitch em { font-style: normal; opacity: .6; margin-left: 8px; }
+</style>
+</head>
+<body>
+<div id="app" class="wrap"></div>
+<div id="pswitch" aria-label="Prototype switcher (not part of the design)"><button id="prev">◀</button><span id="plabel"></span><button id="next">▶</button></div>
+<script>
+const KNOT = "knot.thecluster.io", OWNER = "did:plc:npefy3bubltqewdfhah5i5ef", HANDLE = "unmango.dev (mock handle)";
+const GEM = `<svg viewBox="0 0 200 200" aria-hidden="true"><g stroke="var(--rose-deep)" stroke-width="1.5" stroke-linejoin="round">
+<polygon points="100,18 128,70 100,150 72,70" fill="var(--rose)"/><polygon points="100,18 128,70 100,150" fill="var(--rose-deep)" opacity=".35"/>
+<polygon points="60,60 82,96 66,160 44,100" fill="var(--rose)" opacity=".85"/><polygon points="142,54 162,96 144,162 124,98" fill="var(--rose)" opacity=".85"/></g>
+<g fill="none" stroke="var(--core)" stroke-width="2.5" stroke-linecap="round" opacity=".8"><path d="M10,150 C50,120 70,190 100,160 S150,110 190,150"/><path d="M10,170 C60,200 80,120 100,150 S140,200 190,165"/><circle cx="100" cy="156" r="7"/></g></svg>`;
+
+// ---------------- MOCK, shaped like the knot's read XRPC ----------------
+const c = (hash, message, when, name = "Erik") => ({ hash, message, author: { name, email: "erik@example.invalid", when }, when });
+const COMMITS = [
+  c("a1b2c3d4", "feat(k8s): add cilium module", "2026-11-01T18:22:00Z"), c("9e8d7c6b", "fix: pin nixpkgs for clan 25.05", "2026-10-29T03:10:00Z"),
+  c("5f4e3d2c", "docs: describe the node roles", "2026-10-24T22:41:00Z"), c("1a2b3c4d", "chore(deps): flake.lock bump", "2026-10-20T06:00:00Z", "renovate"),
+  c("0f0e0d0c", "feat: initial etcd module", "2026-10-11T15:31:00Z"),
+];
+const README = `# cairn\n\nA NixOS/clan library for running Kubernetes on bare metal.\n\n## Usage\n\nAdd it as a flake input:\n\n    inputs.cairn.url = "git+https://${KNOT}/${OWNER}/cairn";\n\n## Modules\n\n- \`k8s\`: control plane and kubelet\n- \`etcd\`: clustered etcd\n- \`cilium\`: CNI`;
+const FS = {
+  "": [["modules", "d", 0, 0], ["docs", "d", 0, 2], ["flake.nix", "f", 1820, 1], ["flake.lock", "f", 9310, 3], ["README.md", "f", 612, 2], ["LICENSE", "f", 1069, 4]],
+  "modules": [["k8s", "d", 0, 0], ["etcd", "d", 0, 4], ["default.nix", "f", 340, 0]],
+  "modules/k8s": [["default.nix", "f", 2201, 0], ["cilium.nix", "f", 905, 0]],
+  "modules/etcd": [["default.nix", "f", 1504, 4]],
+  "docs": [["roles.md", "f", 1440, 2]],
+};
+const BLOBS = { "flake.nix": `{\n  description = "cairn: Kubernetes on NixOS with clan";\n\n  inputs = {\n    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";\n    clan-core.url = "git+https://git.clan.lol/clan/clan-core";\n  };\n\n  outputs = { self, nixpkgs, clan-core, ... }: {\n    nixosModules = import ./modules;\n  };\n}` };
+const BRANCHES = [{ name: "main", hash: "a1b2c3d4", when: "2026-11-01T18:22:00Z", default: true }, { name: "cilium", hash: "77aa88bb", when: "2026-10-30T10:00:00Z" }, { name: "renovate/flake-lock", hash: "1a2b3c4d", when: "2026-10-20T06:00:00Z" }];
+const REPOS = [
+  { name: "the-cluster", description: "Flux repo for rosequartz", topics: ["kubernetes", "flux"], mirror: "https://github.com/UnstoppableMango/the-cluster" },
+  { name: "cairn", description: "NixOS/clan library for running Kubernetes", topics: ["kubernetes", "nix", "clan"], mirror: "https://github.com/UnstoppableMango/cairn" },
+  { name: "inoculant", description: "Seeds a fresh cluster with the bits it needs to take over", topics: ["kubernetes"], mirror: "https://github.com/UnstoppableMango/inoculant" },
+  { name: "pki", description: "Certificate authority for the homelab", topics: ["pki"], mirror: "" },
+];
+const api = {
+  tree: (repo, ref, path) => ({ ref, parent: path, dotdot: path.includes("/") ? path.slice(0, path.lastIndexOf("/")) : "",
+    files: (FS[path] ?? []).map(([name, t, size, ci]) => ({ name, mode: t === "d" ? "040000" : "100644", size, last_commit: COMMITS[ci] })),
+    readme: path === "" ? { filename: "README.md", contents: README } : null }),
+  blob: (repo, ref, path) => ({ ref, path, content: BLOBS[path] ?? (path.endsWith("README.md") ? README : `# ${path}\n# (mock file contents)\n`), last_commit: COMMITS[0] }),
+  log: () => ({ commits: COMMITS }), branches: () => ({ branches: BRANCHES }),
+};
+
+// ---------------- helpers ----------------
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]);
+const ago = iso => { const d = (Date.parse("2026-11-07T20:00:00Z") - Date.parse(iso)) / 86400000; return d < 1 ? "today" : `${Math.round(d)}d ago`; };
+const md = src => esc(src).split("\n\n").map(b => b.startsWith("# ") ? `<h1>${b.slice(2)}</h1>` : b.startsWith("## ") ? `<h2>${b.slice(3)}</h2>`
+  : b.startsWith("    ") ? `<pre class="code">${b.split("\n").map(l => `<span>${l.slice(4)}</span>`).join("")}</pre>`
+  : b.startsWith("- ") ? `<ul>${b.split("\n").map(l => `<li>${l.slice(2).replace(/`([^`]+)`/g, "<code>$1</code>")}</li>`).join("")}</ul>` : `<p>${b.replace(/`([^`]+)`/g, "<code>$1</code>")}</p>`).join("");
+const code = s => `<pre class="code">${esc(s).split("\n").map(l => `<span>${l || " "}</span>`).join("")}</pre>`;
+const href = (repo, kind, ref, path) => "#/" + [repo, kind, ref, path].filter(x => x !== undefined && x !== "").join("/");
+const crumbs = (repo, ref, path) => { const parts = path ? path.split("/") : []; let acc = "";
+  return `<span class="crumbs"><a href="${href(repo)}">${repo}</a>${parts.map((p, i) => { acc += (acc ? "/" : "") + p; return ` / ${i === parts.length - 1 ? `<strong>${p}</strong>` : `<a href="${href(repo, "tree", ref, acc)}">${p}</a>`}`; }).join("")}</span>`; };
+const refPicker = (repo, ref, kind, path) => `<select data-nav="${href(repo, kind === "log" ? "log" : "tree", "REF", kind === "log" ? "" : path)}">${BRANCHES.map(b => `<option ${b.name === ref ? "selected" : ""}>${b.name}</option>`).join("")}</select>`;
+const topbar = (repo) => { const r = REPOS.find(x => x.name === repo) ?? {};
+  return `<div class="topbar"><a href="#/"><svg class="gem" viewBox="40 10 130 160">${GEM.replace(/<\/?svg[^>]*>/g, "")}</svg></a>
+  <a href="#/" class="muted mono small">${KNOT}</a><span class="muted">/</span><strong class="mono">${repo}</strong>
+  <span class="muted small" style="flex:1">${esc(r.description ?? "")}</span>
+  <a class="small" href="https://tangled.org/${OWNER}/${repo}">issues &amp; pulls on tangled</a>${r.mirror ? `<a class="small" href="${r.mirror}">github mirror</a>` : ""}</div>`; };
+const filesTable = (repo, ref, t) => `<table class="files">${t.parent ? `<tr><td colspan="3"><a href="${href(repo, "tree", ref, t.dotdot)}">..</a></td></tr>` : ""}
+  ${[...t.files].sort((a, b) => (b.mode === "040000") - (a.mode === "040000") || a.name.localeCompare(b.name)).map(f => { const p = (t.parent ? t.parent + "/" : "") + f.name, dir = f.mode === "040000";
+  return `<tr><td><a href="${href(repo, dir ? "tree" : "blob", ref, p)}">${dir ? "▸ " : ""}${f.name}</a></td><td class="msg">${esc(f.last_commit.message)}</td><td class="when">${ago(f.last_commit.when)}</td></tr>`; }).join("")}</table>`;
+const commitsList = (repo, n) => api.log(repo).commits.slice(0, n).map(ci => `<div class="commit"><div><div>${esc(ci.message)}</div><div class="muted small">${esc(ci.author.name)} · ${ago(ci.when)}</div></div><code class="small muted">${ci.hash.slice(0, 7)}</code></div>`).join("");
+const blobView = (repo, ref, path) => { const b = api.blob(repo, ref, path);
+  return `<div class="box"><header><span class="muted">${esc(b.last_commit.message)} · ${ago(b.last_commit.when)}</span><span style="flex:1"></span>
+  <a href="#" onclick="return false" title="sh.tangled.repo.blob?raw=true">raw</a></header>${path.endsWith(".md") ? `<div class="readme">${md(b.content)}</div>` : code(b.content)}</div>`; };
+const cloneBox = repo => `<div class="clone">git clone https://${KNOT}/${OWNER}/${repo}</div>`;
+
+// ---------------- landing (locked variant D, trimmed) ----------------
+function landing() {
+  return `<section class="hero"><div><p class="muted mono small">${KNOT}</p><h1>Something is growing<br>under <span>rosequartz</span>.</h1>
+  <p>This is THECLUSTER's knot, run by ${HANDLE}. Every repository here is a strand, and Tangled ties them into the wider network.</p></div>${GEM}</section>
+  <p class="muted small" style="margin:0 0 4px">Question for this prototype: repo names open the in-page browser; "tangled" still links out.</p>
+  ${REPOS.map(r => `<div class="row"><div><h3><a href="${href(r.name)}">${r.name}</a></h3><div>${esc(r.description)}</div><div>${r.topics.map(t => `<span class="chip">${t}</span>`).join("")}</div></div>
+  <div class="links"><a href="https://tangled.org/${OWNER}/${r.name}">tangled</a>${r.mirror ? ` · <a href="${r.mirror}">github mirror</a>` : ""}</div></div>`).join("")}
+  <p class="muted small">Only <strong>cairn</strong> has mock contents; the others reuse it.</p>`;
+}
+
+// ---------------- A: tabbed repo page ----------------
+function A({ repo, kind, ref, path }) {
+  const tab = kind === "log" ? "log" : kind === "branches" ? "branches" : "code";
+  const tabs = `<div class="tabs"><a class="${tab === "code" ? "on" : ""}" href="${href(repo)}">Code</a><a class="${tab === "log" ? "on" : ""}" href="${href(repo, "log", ref)}">Commits</a><a class="${tab === "branches" ? "on" : ""}" href="${href(repo, "branches")}">Branches · ${BRANCHES.length}</a></div>`;
+  let body;
+  if (tab === "log") body = `<div style="margin-bottom:10px">${refPicker(repo, ref, "log")}</div><div class="box">${commitsList(repo, 50)}</div>`;
+  else if (tab === "branches") body = `<div class="box">${BRANCHES.map(b => `<div class="commit"><div><a href="${href(repo, "tree", b.name)}">${b.name}</a> ${b.default ? '<span class="chip">default</span>' : ""}<div class="muted small">${b.hash.slice(0, 7)} · ${ago(b.when)}</div></div><a class="small" href="${href(repo, "log", b.name)}">commits</a></div>`).join("")}</div>`;
+  else if (kind === "blob") body = `<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap">${refPicker(repo, ref, "tree", path)} ${crumbs(repo, ref, path)}</div>${blobView(repo, ref, path)}`;
+  else { const t = api.tree(repo, ref, path);
+    body = `<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap">${refPicker(repo, ref, "tree", path)} ${crumbs(repo, ref, path)}<span style="flex:1"></span>${cloneBox(repo)}</div>
+    <div class="box"><header><strong>${esc(COMMITS[0].message)}</strong><span class="muted">${ago(COMMITS[0].when)}</span><span style="flex:1"></span><a href="${href(repo, "log", ref)}">${COMMITS.length} commits</a></header>${filesTable(repo, ref, t)}</div>
+    ${t.readme ? `<div class="box" style="margin-top:16px"><header>${t.readme.filename}</header><div class="readme">${md(t.readme.contents)}</div></div>` : ""}`; }
+  return topbar(repo) + tabs + body;
+}
+
+// ---------------- B: split pane, persistent tree ----------------
+function B({ repo, kind, ref, path }) {
+  const walk = (dir, depth) => api.tree(repo, ref, dir).files.sort((a, b) => (b.mode === "040000") - (a.mode === "040000") || a.name.localeCompare(b.name)).map(f => {
+    const p = (dir ? dir + "/" : "") + f.name, isDir = f.mode === "040000", open = isDir && (path === p || path.startsWith(p + "/"));
+    return `<a class="${p === path ? "on" : ""} ${isDir ? "d" : ""}" style="padding-left:${12 + depth * 14}px" href="${href(repo, isDir ? "tree" : "blob", ref, p)}">${isDir ? (open ? "▾ " : "▸ ") : "  "}${f.name}</a>${open ? walk(p, depth + 1) : ""}`; }).join("");
+  let main;
+  if (kind === "log") main = `<div class="box"><header><strong>Commits on ${ref}</strong></header>${commitsList(repo, 50)}</div>`;
+  else if (kind === "branches") main = `<div class="box">${BRANCHES.map(b => `<div class="commit"><a href="${href(repo, "tree", b.name)}">${b.name}</a><span class="muted small">${ago(b.when)}</span></div>`).join("")}</div>`;
+  else if (kind === "blob") main = `<div style="margin-bottom:10px">${crumbs(repo, ref, path)}</div>${blobView(repo, ref, path)}`;
+  else { const t = api.tree(repo, ref, path);
+    main = `<div style="margin-bottom:10px">${crumbs(repo, ref, path)}</div>${t.readme ? `<div class="box"><header>${t.readme.filename}</header><div class="readme">${md(t.readme.contents)}</div></div>`
+      : `<div class="box">${filesTable(repo, ref, t)}</div>`}`; }
+  return topbar(repo) + `<div class="split"><aside class="box"><header>${refPicker(repo, ref, "tree", "")}<a href="${href(repo, "log", ref)}">commits</a><a href="${href(repo, "branches")}">branches</a></header>
+    <div class="tree">${walk("", 0)}</div><div style="padding:8px 12px;border-top:1px solid var(--line)">${cloneBox(repo)}</div></aside><main>${main}</main></div>`;
+}
+
+// ---------------- C: cgit-like summary ----------------
+function C({ repo, kind, ref, path }) {
+  const on = k => (kind === k || (k === "summary" && !kind)) ? "on" : "";
+  const nav = `<nav><a class="${on("summary")}" href="${href(repo)}">summary</a><a class="${on("tree") || on("blob")}" href="${href(repo, "tree", ref)}">tree</a><a class="${on("log")}" href="${href(repo, "log", ref)}">log</a><a class="${on("branches")}" href="${href(repo, "branches")}">refs</a></nav>`;
+  let body;
+  if (!kind) { const t = api.tree(repo, ref, "");
+    body = `<h2>readme</h2><div class="readme">${md(t.readme.contents)}</div><h2>recent commits</h2><table>${COMMITS.slice(0, 5).map(ci => `<tr><td class="muted">${ago(ci.when)}</td><td>${esc(ci.message)}</td><td class="muted">${esc(ci.author.name)}</td><td class="muted">${ci.hash.slice(0, 7)}</td></tr>`).join("")}</table>
+    <h2>branches</h2><table>${BRANCHES.map(b => `<tr><td><a href="${href(repo, "tree", b.name)}">${b.name}</a></td><td class="muted">${ago(b.when)}</td></tr>`).join("")}</table><h2>clone</h2><div>git clone https://${KNOT}/${OWNER}/${repo}</div>`; }
+  else if (kind === "log") body = `<h2>log: ${ref}</h2><table>${COMMITS.map(ci => `<tr><td class="muted">${ago(ci.when)}</td><td>${esc(ci.message)}</td><td class="muted">${esc(ci.author.name)}</td><td class="muted">${ci.hash.slice(0, 7)}</td></tr>`).join("")}</table>`;
+  else if (kind === "branches") body = `<h2>refs</h2><table>${BRANCHES.map(b => `<tr><td><a href="${href(repo, "tree", b.name)}">${b.name}</a></td><td class="muted">${b.hash.slice(0, 7)}</td><td class="muted">${ago(b.when)}</td></tr>`).join("")}</table>`;
+  else if (kind === "blob") body = `<h2>${crumbs(repo, ref, path)} @ ${ref}</h2>${blobView(repo, ref, path)}`;
+  else body = `<h2>${crumbs(repo, ref, path)} @ ${ref}</h2>${filesTable(repo, ref, api.tree(repo, ref, path))}`;
+  return topbar(repo) + `<div class="vC">${nav}${body}</div>`;
+}
+
+// ---------------- routing + switcher ----------------
+const VARIANTS = { A: ["Tabbed repo page", A], B: ["Split pane with file tree", B], C: ["cgit-style summary", C] };
+const keys = Object.keys(VARIANTS);
+let current = new URLSearchParams(location.search).get("variant") ?? "A";
+// In the app's sandboxed srcdoc preview, "#/..." links resolve against the parent URL and navigate away,
+// so links are intercepted and the route lives in memory; location.hash is only mirrored when allowed.
+let currentHash = location.hash;
+function nav(h) { currentHash = h; try { if (location.href.startsWith("about:srcdoc") || location.protocol !== "about:") history.replaceState(null, "", h); } catch {} show(); scrollTo(0, 0); }
+document.addEventListener("click", e => { const a = e.target.closest('a[href^="#"]'); if (!a || a.getAttribute("href") === "#") return; e.preventDefault(); nav(a.getAttribute("href")); });
+document.addEventListener("change", e => { const s = e.target.closest("select[data-nav]"); if (s) nav(s.dataset.nav.replace("REF", s.value)); });
+function route() {
+  const parts = currentHash.replace(/^#\/?/, "").split("/").filter(Boolean).map(decodeURIComponent);
+  if (!parts.length) return null;
+  const [repo, kind, ref, ...rest] = parts;
+  return { repo, kind: kind ?? "", ref: ref ?? "main", path: rest.join("/") };
+}
+function show() {
+  const key = VARIANTS[current] ? current : "A", r = route();
+  document.getElementById("app").innerHTML = r ? VARIANTS[key][1](r) : landing();
+  document.getElementById("plabel").innerHTML = `${key} (${VARIANTS[key][0]})<em>prototype</em>`;
+}
+function go(d) { current = keys[(keys.indexOf(VARIANTS[current] ? current : "A") + d + keys.length) % keys.length];
+  try { const u = new URL(location); u.searchParams.set("variant", current); history.replaceState(null, "", u); } catch {} show(); }
+document.getElementById("prev").onclick = () => go(-1); document.getElementById("next").onclick = () => go(1);
+addEventListener("keydown", e => { if (e.target.closest("input, textarea, select, [contenteditable]")) return; if (e.key === "ArrowLeft") go(-1); if (e.key === "ArrowRight") go(1); });
+addEventListener("hashchange", () => { currentHash = location.hash; show(); scrollTo(0, 0); });
+show();
+</script>
+</body>
+</html>
