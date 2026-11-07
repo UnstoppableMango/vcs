@@ -1,5 +1,7 @@
 # The on-prem Seed only prepares the forge; vcs still declares every repository
 
+Status: superseded by [0002](0002-forge-program-declares-on-prem-repos.md).
+
 The on-prem forge gets its own Pulumi program, the **Seed** (`forge`), hosted on that forge and run by the Pulumi Kubernetes Operator. It owns the `unmango` org, the `thecluster-bot` user, the API token vcs uses, and its own repository. Nothing else. Every other on-prem repository, its branch protection, and its **Mirrors** are still declared in vcs, so a repository's **Home** and **Mirrors** stay declared together.
 
 The obvious alternative, letting the **Seed** grow into the program for all on-prem repositories, would split one codebase's declaration across two programs whenever it has a GitHub **Mirror**, and the **Mirror hub** wiring would have no single owner.
