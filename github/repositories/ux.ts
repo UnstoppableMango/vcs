@@ -46,10 +46,25 @@ export const sql2csharp = new PublicRepo("sql2csharp", {
 	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
 });
 
+// The hercules-ci GitHub App, which posts Hercules CI's commit statuses.
+const herculesCiAppId = 24794;
+
 export const tdl = new PublicRepo(
 	"tdl",
 	{
 		description: "Type description language and codegen suite",
+		// Hercules CI builds the flake's checks and posts onPush/default as a
+		// commit status from its app (tdl#1366). ci/hercules/evaluation stays
+		// unrequired: when evaluation fails, onPush/default never appears,
+		// which blocks the merge anyway. Naming any check drops the
+		// component's default, so required is restated.
+		requiredChecks: [
+			{ context: "required", integrationId: integrationIds.github },
+			{
+				context: "ci/hercules/onPush/default",
+				integrationId: herculesCiAppId,
+			},
+		],
 		// Each of these is a live setting the component's defaults would
 		// otherwise change. licenseTemplate is unset because tdl is GPL-3.0
 		// rather than the component's MIT.
