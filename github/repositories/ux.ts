@@ -1,5 +1,9 @@
 import { integrationIds, PublicRepo } from "pulumi-components";
 
+// The hercules-ci GitHub App, which reports Hercules CI's results as commit
+// statuses. pulumi-components' integrationIds knows only GitHub Actions.
+const herculesAppId = 24794;
+
 export const a2b = new PublicRepo("a2b", {
 	description: "Registry for converter utilities",
 	topics: ["ux", "go", "dotnet", "nix", "codegen"],
@@ -69,6 +73,18 @@ export const tdl = new PublicRepo(
 				},
 			},
 		},
+		// `required` is the gate job in tdl's ci.yml. Hercules builds the
+		// flake's checks and packages (tdl's nix/hercules.nix), and GitHub
+		// Actions will stop running `nix flake check`, so its onPush job
+		// gates merges too.
+		// ci/hercules/evaluation is left out: when evaluation fails,
+		// onPush/default never reports, which already blocks the merge
+		// (tdl#1344). During a Hercules outage, the admin bypass below is the
+		// way to merge.
+		requiredChecks: [
+			{ context: "required", integrationId: integrationIds.github },
+			{ context: "ci/hercules/onPush/default", integrationId: herculesAppId },
+		],
 		// A key given here replaces that rule outright, so pullRequest is
 		// restated in full. Thread resolution is the gate tdl's AGENTS.md
 		// documents: main takes no approving review, and does take a resolved
@@ -91,7 +107,30 @@ export const tdl = new PublicRepo(
 		},
 		rulesetOptions: { import: "tdl:962997" },
 	},
-	{ protect: true },
+	{
+		protect: true,
+		// PublicRepo takes no bypass list, so a transform on its ruleset adds
+		// one: repository admins (role 5) may merge a pull request past the
+		// rules, the way through a Hercules outage (tdl#1366).
+		transforms: [
+			(args) =>
+				args.type === "github:index/repositoryRuleset:RepositoryRuleset"
+					? {
+							props: {
+								...args.props,
+								bypassActors: [
+									{
+										actorType: "RepositoryRole",
+										actorId: 5,
+										bypassMode: "pull_request",
+									},
+								],
+							},
+							opts: args.opts,
+						}
+					: undefined,
+		],
+	},
 );
 
 export const terraform2crd = new PublicRepo("terraform2crd", {
