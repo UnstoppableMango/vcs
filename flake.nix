@@ -32,6 +32,14 @@
       inputs.pulumi2nix.inputs.treefmt-nix.follows = "treefmt-nix";
     };
 
+    mangopkgs = {
+      url = "github:unmango/pkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+      inputs.systems.follows = "systems";
+      inputs.treefmt-nix.follows = "treefmt-nix";
+    };
+
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -94,6 +102,7 @@
               ++ [
                 gitProvider.default
                 checkPulumiPlugins
+                inputs'.mangopkgs.packages.graphify
               ];
 
             shellHook = ''
