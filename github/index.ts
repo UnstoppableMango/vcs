@@ -147,26 +147,13 @@ addMainRuleset("advent-of-code", adventOfCode.name, { requiredChecks: [] });
 addMainRuleset("mango-mtg", mangoMtg.name, { requiredChecks: [] });
 addMainRuleset("palumi-world", palumiWorld.name, { requiredChecks: [] });
 
-// This ruleset and github's below were made in the UI and adopted, so each
-// keeps the import it was adopted with.
+// This ruleset was made in the UI and adopted, so it keeps the import it was
+// adopted with.
 addMainRuleset(
 	"the-cluster",
 	theCluster.name,
 	{ requiredChecks: [] },
 	{ import: "the-cluster:6525623" },
-);
-
-// The github repository itself is not declared here, only its ruleset.
-addMainRuleset(
-	"github",
-	"github",
-	{
-		requiredChecks: [
-			{ context: "pulumi", integrationId: integrationIds.github },
-		],
-		rules: { creation: true },
-	},
-	{ import: "github:1054380" },
 );
 
 // Every repository that isn't archived or a fork gets the agent labels. Each
