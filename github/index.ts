@@ -156,7 +156,11 @@ addMainRuleset(
 	{ import: "the-cluster:6525623" },
 );
 
-// The github repository itself is not declared here, only its ruleset.
+// The github repository is declared in archived.ts. Its ruleset protects main
+// until the repository is archived. An archived repository is read-only, and
+// Pulumi deletes removed resources after it updates the rest, so the ruleset
+// can't be deleted in the apply that archives the repository. retainOnDelete
+// makes removing it only drop it from state, so it goes in that same apply.
 addMainRuleset(
 	"github",
 	"github",
@@ -166,7 +170,7 @@ addMainRuleset(
 		],
 		rules: { creation: true },
 	},
-	{ import: "github:1054380" },
+	{ import: "github:1054380", retainOnDelete: true },
 );
 
 // Every repository that isn't archived or a fork gets the agent labels. Each

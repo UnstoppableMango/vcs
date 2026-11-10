@@ -1,12 +1,19 @@
-# Graph Report - vcs  (2026-11-08)
+# Graph Report - vcs  (2026-11-10)
 
 ## Corpus Check
-- Corpus is ~16,498 words - fits in a single context window. You may not need a graph.
+- 81 files · ~16,692 words
+- Verdict: corpus is large enough that graph structure adds value.
+- Unclassified: 8 file(s) not represented in the graph (top: (none) 4, .lock 2, .nix 1)
 
 ## Summary
-- 384 nodes · 542 edges · 38 communities (19 shown, 19 thin omitted)
+- 385 nodes · 543 edges · 38 communities (19 shown, 19 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 10 edges (avg confidence: 0.78)
-- Token cost: 110,302 input · 0 output
+- Token cost: 0 input · 0 output
+
+## Graph Freshness
+- Built from commit: `a02ecaa7`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - Nix tooling GitLab groups
@@ -40,34 +47,34 @@
 6. `@pulumi/github` - 13 edges
 7. `ADR 0002: The Forge program declares every repository with an on-prem copy` - 12 edges
 8. `addMainRuleset()` - 10 edges
-9. `add-repo skill` - 7 edges
-10. `pulumi job (preview on PR, up on main)` - 7 edges
+9. `pulumi job (preview on PR, up on main)` - 7 edges
+10. `add-repo skill` - 7 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Create vs import (pulumi import with parent URN)` --semantically_similar_to--> `Home move procedure (import, state rm, zero deletes)`  [INFERRED] [semantically similar]
-  .claude/skills/add-repo/SKILL.md → docs/adr/0002-forge-program-declares-on-prem-repos.md
 - `Verify with tsc --noEmit and pulumi preview --diff` --semantically_similar_to--> `pulumi job (preview on PR, up on main)`  [INFERRED] [semantically similar]
   .claude/skills/add-repo/SKILL.md → .github/workflows/ci.yml
+- `Create vs import (pulumi import with parent URN)` --semantically_similar_to--> `Home move procedure (import, state rm, zero deletes)`  [INFERRED] [semantically similar]
+  .claude/skills/add-repo/SKILL.md → docs/adr/0002-forge-program-declares-on-prem-repos.md
 - `Use the glossary's vocabulary` --conceptually_related_to--> `Seed`  [INFERRED]
   docs/agents/domain.md → CONTEXT.md
-- `Classic PAT for GitHub Mirrors` --conceptually_related_to--> `PublicRepo / PrivateRepo / Fork components (pulumi-components)`  [INFERRED]
-  docs/adr/0002-forge-program-declares-on-prem-repos.md → .claude/skills/add-repo/SKILL.md
-- `Create vs import (pulumi import with parent URN)` --references--> `prod stack config`  [INFERRED]
-  .claude/skills/add-repo/SKILL.md → Pulumi.prod.yaml
+- `Home move procedure (import, state rm, zero deletes)` --references--> `Home`  [EXTRACTED]
+  docs/adr/0002-forge-program-declares-on-prem-repos.md → CONTEXT.md
+- `Classic PAT for GitHub Mirrors` --rationale_for--> `Mirror`  [EXTRACTED]
+  docs/adr/0002-forge-program-declares-on-prem-repos.md → CONTEXT.md
 
 ## Import Cycles
 - None detected.
 
 ## Hyperedges (group relationships)
-- **Hosting domain model: Forge, Home, Mirror, Mirror hub, Seed, Forge program** — context_forge, context_home, context_mirror, context_mirror_hub, context_seed, context_forge_program [EXTRACTED 1.00]
 - **On-prem forge ownership decision chain (ADR 0001 superseded by ADR 0002)** — docs_adr_0001_seed_stays_thin_decision, docs_adr_0002_forge_program_declares_on_prem_repos_decision, context_seed, context_forge_program, docs_adr_0002_forge_program_declares_on_prem_repos_unmango_scm [EXTRACTED 1.00]
+- **Hosting domain model: Forge, Home, Mirror, Mirror hub, Seed, Forge program** — context_forge, context_home, context_mirror, context_mirror_hub, context_seed, context_forge_program [EXTRACTED 1.00]
 - **Pulumi deploy pipeline: CI pulumi job, Key Vault secrets, B2 backend, prod stack** — _github_workflows_ci_pulumi_job, _github_workflows_ci_key_vault_secrets, pulumi_b2_state_backend, pulumi_prod_prod_stack_config, pulumi_vcs_project [INFERRED 0.85]
 
 ## Communities (38 total, 19 thin omitted)
 
 ### Community 0 - "Nix tooling GitLab groups"
 Cohesion: 0.06
-Nodes (48): aspireGroup, aspire2nix, bufGroup, buf2nix, dockerGroup, docker2nix, goreleaserGroup, goreleaser2nix (+40 more)
+Nodes (47): aspireGroup, aspire2nix, bufGroup, buf2nix, dockerGroup, docker2nix, goreleaserGroup, goreleaser2nix (+39 more)
 
 ### Community 1 - "Forked GitHub repos"
 Cohesion: 0.04
@@ -94,20 +101,20 @@ Cohesion: 0.11
 Nodes (17): confit, devcontainers, edd, fenced, forkctl, goreleaser2nix, gossamer2nix, ideas (+9 more)
 
 ### Community 7 - "Package dependencies"
-Cohesion: 0.12
-Nodes (16): dependencies, pulumi-components, @pulumi/github, @pulumi/gitlab, @pulumi/pulumi, @unmango/pulumi-git, devDependencies, @types/bun (+8 more)
+Cohesion: 0.11
+Nodes (17): dependencies, pulumi-components, @pulumi/github, @pulumi/gitlab, @pulumi/pulumi, @unmango/pulumi-git, devDependencies, @types/bun (+9 more)
 
 ### Community 8 - "Personal repos"
 Cohesion: 0.13
 Nodes (14): config, controlPlane, dotfiles, hosts, iam, iamAzureVariables, me, nixos (+6 more)
 
 ### Community 9 - "Archived and work repos"
-Cohesion: 0.17
-Nodes (9): infra, minecraftOperator, terraformProviderGit, terraformProviderPfSense, terraformProviderSmallImprovements, auctionApp, kubernetesTheWrongWay, openshiftLab (+1 more)
+Cohesion: 0.22
+Nodes (7): terraformProviderGit, terraformProviderPfSense, terraformProviderSmallImprovements, auctionApp, kubernetesTheWrongWay, openshiftLab, pulumi-components
 
 ### Community 10 - "Demos and rulesets"
-Cohesion: 0.22
-Nodes (9): ansibleOrchard, fsharpPropertyTesting, gheIac, imaug, pulumiImaug, addMainRuleset(), MainRulesetArgs, @pulumi/github (+1 more)
+Cohesion: 0.18
+Nodes (9): github, infra, minecraftOperator, ansibleOrchard, fsharpPropertyTesting, gheIac, imaug, pulumiImaug (+1 more)
 
 ### Community 11 - "Codegen UX repos"
 Cohesion: 0.18
@@ -118,8 +125,8 @@ Cohesion: 0.20
 Nodes (9): cliwrapFsharp, commandLineExtensions, dockerDotnetFsharp, dockerFsharp, dotnetProxmoxClient, godec, ihfs, nix (+1 more)
 
 ### Community 13 - "Application repos"
-Cohesion: 0.25
-Nodes (7): johnstonDems, keepers, mangomu, minecraftManager, slackerBot, xmageDocker, xmageRuleset
+Cohesion: 0.18
+Nodes (10): johnstonDems, keepers, mangomu, minecraftManager, slackerBot, xmageDocker, xmageRuleset, addMainRuleset() (+2 more)
 
 ### Community 14 - "Fun repos"
 Cohesion: 0.25
@@ -142,24 +149,24 @@ Cohesion: 0.50
 Nodes (3): extends, $schema, github>UnstoppableMango/renovate-config
 
 ## Knowledge Gaps
-- **11 isolated node(s):** `github>UnstoppableMango/renovate-config`, `@types/bun`, `typescript`, `Raw gh.Repository with protect: true`, `check-pulumi-plugins` (+6 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 257 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **11 isolated node(s):** `github>UnstoppableMango/renovate-config`, `@types/bun`, `typescript`, `@sapslaj/pulumi-gitea`, `SourceRepo` (+6 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 258 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **19 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `@pulumi/pulumi` connect `Demos and rulesets` to `Personal repos`, `Forked GitHub repos`, `Nix tooling GitLab groups`, `Package dependencies`?**
+- **Why does `@pulumi/pulumi` connect `Application repos` to `Personal repos`, `Forked GitHub repos`, `Nix tooling GitLab groups`, `Package dependencies`?**
   _High betweenness centrality (0.196) - this node is a cross-community bridge._
 - **What connects `github>UnstoppableMango/renovate-config`, `@types/bun`, `typescript` to the rest of the system?**
   _11 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Nix tooling GitLab groups` be split into smaller, more focused modules?**
-  _Cohesion score 0.05744888023369036 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05827505827505827 - nodes in this community are weakly interconnected._
 - **Why does `pulumi-components` connect `Archived and work repos` to `Forked GitHub repos`, `GitHub labels and tiers`, `Utility repos`, `Package dependencies`, `Personal repos`, `Demos and rulesets`, `Codegen UX repos`, `Library repos`, `Application repos`, `Fun repos`, `Homelab repos`, `Operator repos`, `Pulumi repos`?**
-  _High betweenness centrality (0.128) - this node is a cross-community bridge._
+  _High betweenness centrality (0.127) - this node is a cross-community bridge._
 - **Should `Forked GitHub repos` be split into smaller, more focused modules?**
   _Cohesion score 0.04 - nodes in this community are weakly interconnected._
-- **Why does `@pulumi/github` connect `Demos and rulesets` to `GitHub labels and tiers`, `Utility repos`, `Package dependencies`, `Personal repos`, `Archived and work repos`, `Library repos`, `Application repos`, `Fun repos`, `Operator repos`, `Pulumi repos`?**
-  _High betweenness centrality (0.033) - this node is a cross-community bridge._
+- **Why does `@pulumi/github` connect `Demos and rulesets` to `GitHub labels and tiers`, `Utility repos`, `Package dependencies`, `Personal repos`, `Library repos`, `Application repos`, `Fun repos`, `Operator repos`, `Pulumi repos`?**
+  _High betweenness centrality (0.034) - this node is a cross-community bridge._
 - **Should `Forges, Homes and Mirrors` be split into smaller, more focused modules?**
   _Cohesion score 0.13 - nodes in this community are weakly interconnected._
