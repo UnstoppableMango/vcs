@@ -147,30 +147,13 @@ addMainRuleset("advent-of-code", adventOfCode.name, { requiredChecks: [] });
 addMainRuleset("mango-mtg", mangoMtg.name, { requiredChecks: [] });
 addMainRuleset("palumi-world", palumiWorld.name, { requiredChecks: [] });
 
-// This ruleset and github's below were made in the UI and adopted, so each
-// keeps the import it was adopted with.
+// This ruleset was made in the UI and adopted, so it keeps the import it was
+// adopted with.
 addMainRuleset(
 	"the-cluster",
 	theCluster.name,
 	{ requiredChecks: [] },
 	{ import: "the-cluster:6525623" },
-);
-
-// The github repository is declared in archived.ts. Its ruleset protects main
-// until the repository is archived. An archived repository is read-only, and
-// Pulumi deletes removed resources after it updates the rest, so the ruleset
-// can't be deleted in the apply that archives the repository. retainOnDelete
-// makes removing it only drop it from state, so it goes in that same apply.
-addMainRuleset(
-	"github",
-	"github",
-	{
-		requiredChecks: [
-			{ context: "pulumi", integrationId: integrationIds.github },
-		],
-		rules: { creation: true },
-	},
-	{ import: "github:1054380", retainOnDelete: true },
 );
 
 // Every repository that isn't archived or a fork gets the agent labels. Each
