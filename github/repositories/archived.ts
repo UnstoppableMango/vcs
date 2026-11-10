@@ -23,8 +23,9 @@ export const minecraftOperator = new gh.Repository("minecraft-operator", {
 //
 // Archiving takes two applies. The first imports the repository, which needs
 // `archived` ignored too, because an import fails on any input that differs
-// from the live repository. The second drops the import and stops ignoring
-// `archived`, which archives it.
+// from the live repository. The second drops the import, stops ignoring
+// `archived`, which archives it, and removes the repository's ruleset in
+// github/index.ts.
 export const github = new gh.Repository(
 	"github",
 	{ name: "github", archived: true },
