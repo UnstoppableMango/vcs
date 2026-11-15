@@ -4,8 +4,8 @@
 # that the other hasn't followed would silently run a provider the SDK wasn't
 # built against. Compare the two pins directly instead.
 #
-# The PATH plugin versions come from the environment: GITHUB_PLUGIN_VERSION,
-# GITLAB_PLUGIN_VERSION, and GIT_PLUGIN_VERSION.
+# The PATH plugin versions come from the environment: COMMAND_PLUGIN_VERSION,
+# GITHUB_PLUGIN_VERSION, GITLAB_PLUGIN_VERSION, and GIT_PLUGIN_VERSION.
 set -euo pipefail
 
 status=0
@@ -32,6 +32,7 @@ check() {
   fi
 }
 
+check command node_modules/@pulumi/command "$COMMAND_PLUGIN_VERSION"
 check github node_modules/@pulumi/github "$GITHUB_PLUGIN_VERSION"
 check gitlab node_modules/@pulumi/gitlab "$GITLAB_PLUGIN_VERSION"
 check git node_modules/@unmango/pulumi-git "$GIT_PLUGIN_VERSION"

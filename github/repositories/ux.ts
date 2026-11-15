@@ -55,8 +55,9 @@ export const tdl = new PublicRepo(
 	{
 		description: "Type description language and codegen suite",
 		// Each of these is a live setting the component's defaults would
-		// otherwise change. licenseTemplate is unset because tdl is GPL-3.0
-		// rather than the component's MIT.
+		// otherwise change. licenseTemplate stays unset: tdl is MIT, but it
+		// predates the component, and GitHub reads the template only when it
+		// creates a repository.
 		overrides: {
 			allowRebaseMerge: true,
 			allowUpdateBranch: true,
