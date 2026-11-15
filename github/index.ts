@@ -207,14 +207,15 @@ for (const [key, repo] of Object.entries(labeledRepos)) {
 // repository's export like labelOptions.
 const securityOptions: Record<string, SecurityReportingOptions> = {
 	// The OpenSSF Best Practices badge asks for a private way to report a
-	// vulnerability (tdl#1566); SECURITY.md links to the form this opens.
+	// vulnerability (tdl#1566); tdl's SECURITY.md (tdl#1573) links to the form
+	// this opens.
 	tdl: { privateVulnerabilityReporting: true },
 };
 
 for (const [key, opts] of Object.entries(securityOptions)) {
 	const repo = labeledRepos[key];
-	if (!(repo instanceof PublicRepo || repo instanceof gh.Repository)) {
-		throw new Error(`securityOptions names ${key}, not a public repository`);
+	if (!(repo instanceof PublicRepo)) {
+		throw new Error(`securityOptions names ${key}, which is no PublicRepo`);
 	}
 	addSecurityReporting(kebab(key), repo, opts);
 }
