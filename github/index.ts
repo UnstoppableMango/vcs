@@ -8,6 +8,10 @@ import {
 	type LabeledRepo,
 } from "./repositories/labels";
 import { addMainRuleset } from "./repositories/ruleset";
+import {
+	addSecurityReporting,
+	type SecurityReportingOptions,
+} from "./repositories/security";
 
 const adventOfCode = new gh.Repository(
 	"advent-of-code",
@@ -197,4 +201,21 @@ for (const [key, repo] of Object.entries(labeledRepos)) {
 	if (key in archived) continue;
 	if (!isLabeledRepo(repo)) continue;
 	addAgentLabels(kebab(key), repo, labelOptions[key]);
+}
+
+// The security reporting settings pulumi-github cannot declare, keyed by the
+// repository's export like labelOptions.
+const securityOptions: Record<string, SecurityReportingOptions> = {
+	// The OpenSSF Best Practices badge asks for a private way to report a
+	// vulnerability (tdl#1566); tdl's SECURITY.md (tdl#1573) links to the form
+	// this opens.
+	tdl: { privateVulnerabilityReporting: true },
+};
+
+for (const [key, opts] of Object.entries(securityOptions)) {
+	const repo = labeledRepos[key];
+	if (!(repo instanceof PublicRepo)) {
+		throw new Error(`securityOptions names ${key}, which is no PublicRepo`);
+	}
+	addSecurityReporting(kebab(key), repo, opts);
 }

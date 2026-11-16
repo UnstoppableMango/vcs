@@ -70,6 +70,7 @@
             name = "check-pulumi-plugins";
             runtimeInputs = [ pkgs.jq ];
             runtimeEnv = {
+              COMMAND_PLUGIN_VERSION = pkgs.pulumiPackages.command.version;
               GITHUB_PLUGIN_VERSION = pkgs.pulumiPackages.github.version;
               GITLAB_PLUGIN_VERSION = pkgs.pulumiPackages.gitlab.version;
               GIT_PLUGIN_VERSION = gitProvider.default.version;
@@ -96,6 +97,7 @@
               ])
               ++ (with pkgs.pulumiPackages; [
                 pulumi-bun
+                command
                 github
                 gitlab
               ])
