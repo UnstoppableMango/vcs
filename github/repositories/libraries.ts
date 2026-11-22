@@ -169,6 +169,7 @@ addMainRuleset("CliWrap.FSharp", cliwrapFsharp.name, {
 		{ context: "nix", integrationId: integrationIds.github },
 		{ context: "devcontainer", integrationId: integrationIds.github },
 		{ context: "codecov/project", integrationId: codecovIntegrationId },
+		{ context: "codecov/project/floor", integrationId: codecovIntegrationId },
 		{ context: "codecov/patch", integrationId: codecovIntegrationId },
 	],
 });
