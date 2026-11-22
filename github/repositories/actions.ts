@@ -3,9 +3,8 @@ import { Config, type Input, output } from "@pulumi/pulumi";
 
 const github = new Config("github");
 
-// The REST call that sets which fork pull requests wait for a maintainer's
-// approval before their workflows run. It runs under bun, as security.ts's
-// call does, and reaches it through the environment for the same reason.
+// Reaches bun through the environment, so no quote in it can break the shell
+// command.
 const script = `
 const url = "https://api.github.com/repos/" + process.env.REPOSITORY + "/actions/permissions/fork-pr-contributor-approval";
 const res = await fetch(url, {
@@ -23,7 +22,6 @@ if (!res.ok) {
 }
 `;
 
-// The policies GitHub offers, strictest first, as the API names them.
 type ApprovalPolicy =
 	| "all_external_contributors"
 	| "first_time_contributors"
@@ -31,18 +29,9 @@ type ApprovalPolicy =
 
 const call = (policy: ApprovalPolicy) => `POLICY=${policy} bun -e "$SCRIPT"`;
 
-/**
- * Makes every pull request from an outside collaborator's fork wait for
- * approval before its workflows run, GitHub's "Require approval for all
- * outside collaborators". Only Erik's own commits and his bots run on-prem
- * (the Nix CI spec's trust model), so a fork never reaches a self-hosted
- * runner unseen. GitHub offers this setting only on public repositories.
- *
- * pulumi-github has no resource for it, so a command makes the REST call, as
- * security.ts does and for the same reasons: on create, and again whenever its
- * environment changes, with no triggers. Deleting the command puts back
- * GitHub's default, which asks only first-time contributors.
- */
+// pulumi-github has no resource for this, and the bun runtime can't run a
+// dynamic provider. No triggers: a replacement would run the old command's
+// delete after the new one's create, putting the default back.
 export function addForkPrApproval(
 	prefix: string,
 	repositoryName: Input<string>,
