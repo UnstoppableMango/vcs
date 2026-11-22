@@ -157,37 +157,9 @@ export const proxmoxClient = new gh.Repository(
 	{ protect: true },
 );
 
-addMainRuleset("CliWrap.FSharp", cliwrapFsharp.name, { requiredChecks: [] });
-
-// CliWrap.FSharp's main still has the classic branch protection made in the
-// UI before rulesets. It required signed commits, which the main rulesets
-// dropped (#56, #60), until that was turned off in the UI. This adopts it
-// exactly as GitHub has it, so the import matches; a later change removes it
-// and moves its `build` check into the ruleset.
-new gh.BranchProtection(
-	"CliWrap.FSharp-main",
-	{
-		repositoryId: cliwrapFsharp.nodeId,
-		pattern: "main",
-		enforceAdmins: false,
-		allowsDeletions: false,
-		allowsForcePushes: false,
-		lockBranch: false,
-		requireConversationResolution: false,
-		requireSignedCommits: false,
-		requiredLinearHistory: true,
-		requiredStatusChecks: [{ strict: true, contexts: ["build"] }],
-		requiredPullRequestReviews: [
-			{
-				dismissStaleReviews: false,
-				requireCodeOwnerReviews: false,
-				requireLastPushApproval: false,
-				requiredApprovingReviewCount: 0,
-			},
-		],
-	},
-	{ import: "CliWrap.FSharp:main" },
-);
+addMainRuleset("CliWrap.FSharp", cliwrapFsharp.name, {
+	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
+});
 addMainRuleset("Docker.Dotnet.FSharp", dockerDotnetFsharp.name, {
 	requiredChecks: [],
 });
