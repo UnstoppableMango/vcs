@@ -1,33 +1,23 @@
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import * as command from "@pulumi/command";
 import { Config, type Input, output } from "@pulumi/pulumi";
 
 const github = new Config("github");
 
-// Reaches bun through the environment, so no quote in it can break the shell
-// command.
-const script = `
-const url = "https://api.github.com/repos/" + process.env.REPOSITORY + "/actions/permissions/fork-pr-contributor-approval";
-const res = await fetch(url, {
-	method: "PUT",
-	headers: {
-		Accept: "application/vnd.github+json",
-		Authorization: "Bearer " + process.env.GITHUB_TOKEN,
-		"X-GitHub-Api-Version": "2022-11-28",
-	},
-	body: JSON.stringify({ approval_policy: process.env.POLICY }),
-});
-if (!res.ok) {
-	console.error(res.status, await res.text());
-	process.exit(1);
-}
-`;
+const script = "scripts/fork-pr-approval.ts";
+
+// Reruns create when the script changes.
+const scriptHash = createHash("sha256")
+	.update(readFileSync(script))
+	.digest("hex");
 
 type ApprovalPolicy =
 	| "all_external_contributors"
 	| "first_time_contributors"
 	| "first_time_contributors_new_to_github";
 
-const call = (policy: ApprovalPolicy) => `POLICY=${policy} bun -e "$SCRIPT"`;
+const call = (policy: ApprovalPolicy) => `bun ${script} ${policy}`;
 
 // pulumi-github has no resource for this, and the bun runtime can't run a
 // dynamic provider. No triggers: a replacement would run the old command's
@@ -45,7 +35,7 @@ export function addForkPrApproval(
 		environment: {
 			REPOSITORY: repository,
 			GITHUB_TOKEN: github.requireSecret("token"),
-			SCRIPT: script,
+			SCRIPT_HASH: scriptHash,
 		},
 	});
 }
