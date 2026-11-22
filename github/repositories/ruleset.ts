@@ -4,6 +4,7 @@ import type {
 	RepositoryRulesetRulesRequiredStatusChecksRequiredCheck,
 } from "@pulumi/github/types/input";
 import type { CustomResourceOptions, Input } from "@pulumi/pulumi";
+import { defaultBypassActors } from "pulumi-components";
 
 export interface MainRulesetArgs {
 	// requiredChecks has no default, unlike PublicRepo's: a repository
@@ -32,6 +33,7 @@ export function addMainRuleset(
 			repository,
 			enforcement: "active",
 			target: "branch",
+			bypassActors: defaultBypassActors,
 			conditions: {
 				refName: {
 					includes: ["~DEFAULT_BRANCH"],

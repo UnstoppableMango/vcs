@@ -1,6 +1,7 @@
 import * as gh from "@pulumi/github";
 import { integrationIds, PrivateRepo, PublicRepo } from "pulumi-components";
 import * as repositories from "./repositories";
+import { addForkPrApproval } from "./repositories/actions";
 import * as archived from "./repositories/archived";
 import {
 	type AgentLabelOptions,
@@ -218,4 +219,19 @@ for (const [key, opts] of Object.entries(securityOptions)) {
 		throw new Error(`securityOptions names ${key}, which is no PublicRepo`);
 	}
 	addSecurityReporting(kebab(key), repo, opts);
+}
+
+// Every public repository makes an outside collaborator's fork pull request
+// wait for approval before its workflows run (the Nix CI spec's required gate
+// and rulesets). Each bare repository outside archived is public, with a main
+// ruleset from addMainRuleset; private ones are PrivateRepos, whose forks
+// GitHub governs with a different setting. Forks are left out: they take pull
+// requests to upstream, not to themselves.
+for (const [key, repo] of Object.entries(labeledRepos)) {
+	if (key in archived) continue;
+	if (repo instanceof PublicRepo) {
+		addForkPrApproval(kebab(key), repo.repo.name);
+	} else if (repo instanceof gh.Repository) {
+		addForkPrApproval(kebab(key), repo.name);
+	}
 }
