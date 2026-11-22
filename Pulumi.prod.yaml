@@ -2,7 +2,7 @@ config:
   gitlab:token:
     secure: v1:7Qb+fVloZ/0lO2Mt:BiVaeqIR9KL6et8FMWa6UouFaduKAKj+qXPA/CjMFgG1ksHjW3msbxVeXG+d9uVTYblzWGOcVlJm4x9jNftiZSxbasOVDqhFAa18zI+K
   github:token:
-    secure: v1:NAdY9TMDh2S45+De:cIo3eF+U+Q0BG1oyZbnqVzUL8GFlyn2l3513PBS7QIT86uJXJ6iBrYllQVLr1xN1X+sSeYWpxGS+5XJ3LB7Iq0m4oDIgMi3DC1NuSmRqfNqxVqffmofFs8XuJ/Op6qPkU1JXZRKU6EMfA02vNw==
+    secure: v1:1GJ7fnR9f2fketZF:4IRjtUAWz7jTA0z90UlRUCq1/f+u3rakibsG/X3X2gB6p9Lva4d/ji3FJMDe4d1pXr1QQtuLGxiriEnGDGY81M4pFsaFGQiSPOAfstLx62v0Se2lRmvCiqMuBZ8XGucPLF3DLvnsd2urHpVOHA==
   github:owner: UnstoppableMango
   vcs:azureSubscriptionId: 331fb30f-0da7-4da5-8ec0-3b34c1747e42
   vcs:azureTenantId: cc1862e8-3663-4b04-afb6-da85f96a6111
