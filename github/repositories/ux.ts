@@ -80,8 +80,8 @@ export const tdl = new PublicRepo(
 		// gates merges too.
 		// ci/hercules/evaluation is left out: when evaluation fails,
 		// onPush/default never reports, which already blocks the merge
-		// (tdl#1344). During a Hercules outage, the admin bypass below is the
-		// way to merge.
+		// (tdl#1344). During a Hercules outage, the main ruleset's admin bypass
+		// is the way to merge (tdl#1366).
 		requiredChecks: [
 			{ context: "required", integrationId: integrationIds.github },
 			{ context: "ci/hercules/onPush/default", integrationId: herculesAppId },
@@ -108,30 +108,7 @@ export const tdl = new PublicRepo(
 		},
 		rulesetOptions: { import: "tdl:962997" },
 	},
-	{
-		protect: true,
-		// PublicRepo takes no bypass list, so a transform on its ruleset adds
-		// one: repository admins (role 5) may merge a pull request past the
-		// rules, the way through a Hercules outage (tdl#1366).
-		transforms: [
-			(args) =>
-				args.type === "github:index/repositoryRuleset:RepositoryRuleset"
-					? {
-							props: {
-								...args.props,
-								bypassActors: [
-									{
-										actorType: "RepositoryRole",
-										actorId: 5,
-										bypassMode: "pull_request",
-									},
-								],
-							},
-							opts: args.opts,
-						}
-					: undefined,
-		],
-	},
+	{ protect: true },
 );
 
 export const terraform2crd = new PublicRepo("terraform2crd", {

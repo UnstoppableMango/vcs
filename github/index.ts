@@ -1,6 +1,7 @@
 import * as gh from "@pulumi/github";
 import { integrationIds, PrivateRepo, PublicRepo } from "pulumi-components";
 import * as repositories from "./repositories";
+import { addForkPrApproval } from "./repositories/actions";
 import * as archived from "./repositories/archived";
 import {
 	type AgentLabelOptions,
@@ -218,4 +219,15 @@ for (const [key, opts] of Object.entries(securityOptions)) {
 		throw new Error(`securityOptions names ${key}, which is no PublicRepo`);
 	}
 	addSecurityReporting(kebab(key), repo, opts);
+}
+
+// GitHub refuses the fork PR approval setting on private repositories, so this
+// relies on every unarchived bare gh.Repository here being public.
+for (const [key, repo] of Object.entries(labeledRepos)) {
+	if (key in archived) continue;
+	if (repo instanceof PublicRepo) {
+		addForkPrApproval(kebab(key), repo.repo.name);
+	} else if (repo instanceof gh.Repository) {
+		addForkPrApproval(kebab(key), repo.name);
+	}
 }
