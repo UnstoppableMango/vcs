@@ -157,13 +157,8 @@ export const proxmoxClient = new gh.Repository(
 	{ protect: true },
 );
 
-// The Codecov GitHub App, which reports codecov/* statuses.
 const codecovIntegrationId = 254;
 
-// Every check here reports on every pull request: ci.yml has no path filters,
-// and Codecov reports once build uploads coverage. nix, devcontainer and
-// codecov/patch also report but are left advisory, and pack, publish and
-// release are skipped on pull requests.
 addMainRuleset("CliWrap.FSharp", cliwrapFsharp.name, {
 	requiredChecks: [
 		{ context: "build", integrationId: integrationIds.github },
