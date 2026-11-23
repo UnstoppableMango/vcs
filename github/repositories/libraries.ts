@@ -157,6 +157,7 @@ export const proxmoxClient = new gh.Repository(
 	{ protect: true },
 );
 
+// TODO: use integrationIds.codecov (UnstoppableMango/pulumi-components#58)
 const codecovIntegrationId = 254;
 
 addMainRuleset("CliWrap.FSharp", cliwrapFsharp.name, {
