@@ -1,5 +1,4 @@
 import { readFileSync } from "node:fs";
-import * as pulumi from "@pulumi/pulumi";
 import * as git from "@unmango/pulumi-git";
 import { Fork, integrationIds, PublicRepo } from "pulumi-components";
 
@@ -368,7 +367,6 @@ export const gomod2nixNoIfd = new git.Branch("gomod2nix-no-ifd", {
 	repository: {
 		url: gomod2nix.repo.httpCloneUrl,
 		host: "github",
-		auth: { token: new pulumi.Config("github").requireSecret("token") },
 	},
 	name: "no-ifd",
 	baseRef: "master",
