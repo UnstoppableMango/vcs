@@ -157,8 +157,15 @@ export const proxmoxClient = new gh.Repository(
 	{ protect: true },
 );
 
+// TODO: use integrationIds.codecov (UnstoppableMango/pulumi-components#58)
+const codecovIntegrationId = 254;
+
 addMainRuleset("CliWrap.FSharp", cliwrapFsharp.name, {
-	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
+	requiredChecks: [
+		{ context: "build", integrationId: integrationIds.github },
+		{ context: "codecov/project", integrationId: codecovIntegrationId },
+		{ context: "codecov/project/floor", integrationId: codecovIntegrationId },
+	],
 });
 addMainRuleset("Docker.Dotnet.FSharp", dockerDotnetFsharp.name, {
 	requiredChecks: [],
