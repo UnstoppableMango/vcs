@@ -133,7 +133,7 @@ export const ihfs = new PublicRepo("ihfs", {
 export const nix = new PublicRepo("nix", {
 	description: "Random Nix crap",
 	topics: ["nix", "linux", "flake", "module"],
-	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
+	requiredChecks: [{ context: "required", integrationId: integrationIds.github }],
 });
 
 export const proxmoxClient = new gh.Repository(
