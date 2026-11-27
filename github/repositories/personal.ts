@@ -80,7 +80,7 @@ for (const [variableName, value] of Object.entries(iamAzureVariables)) {
 
 export const nixos = new PublicRepo("nixos", {
 	description: "My NixOS source",
-	requiredChecks: [{ context: "build", integrationId: integrationIds.github }],
+	requiredChecks: [{ context: "required", integrationId: integrationIds.github }],
 });
 
 export const pki = new PrivateRepo(
