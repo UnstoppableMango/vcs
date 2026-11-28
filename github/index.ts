@@ -116,9 +116,7 @@ const palumiWorld = new gh.Repository(
 const renovateConfig = new PublicRepo("renovate-config", {
 	description: `UnstoppableMango's Renovate presets`,
 	topics: ["renovate", "cicd", "bun"],
-	requiredChecks: [
-		{ context: "Validate", integrationId: integrationIds.github },
-	],
+	requiredChecks: [{ context: "required", integrationId: integrationIds.github }],
 });
 
 const theCluster = new gh.Repository(
@@ -157,7 +155,7 @@ addMainRuleset("palumi-world", palumiWorld.name, { requiredChecks: [] });
 addMainRuleset(
 	"the-cluster",
 	theCluster.name,
-	{ requiredChecks: [] },
+	{ requiredChecks: [{ context: "required", integrationId: integrationIds.github }] },
 	{ import: "the-cluster:6525623" },
 );
 
