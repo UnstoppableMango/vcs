@@ -14,6 +14,27 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  nix:
+    uses: unmango/ci/.github/workflows/nix-ci.yml@30ae545a17dc3cd88663c8d0aa92ae374b62779c
+    permissions:
+      checks: read
+      contents: read
+      pull-requests: write
+      statuses: read
+    secrets:
+      CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+  required:
+    needs: [nix, pulumi]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: jq -e 'all(.[]; .result == "success" or .result == "skipped")' <<<"$NEEDS"
+
+  # Required until the ruleset switches to `required` (#162).
   check:
     runs-on: ubuntu-latest
     permissions:

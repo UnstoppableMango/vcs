@@ -40,6 +40,14 @@
       inputs.treefmt-nix.follows = "treefmt-nix";
     };
 
+    mynix = {
+      url = "github:UnstoppableMango/nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+      inputs.systems.follows = "systems";
+      inputs.treefmt-nix.follows = "treefmt-nix";
+    };
+
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -54,6 +62,7 @@
       imports = with inputs; [
         systems.flakeModule or { }
         treefmt-nix.flakeModule
+        mynix.flakeModules.ci
       ];
 
       perSystem =
