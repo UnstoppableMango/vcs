@@ -5,10 +5,7 @@ import { addMainRuleset } from "./ruleset";
 export const vcs = new PublicRepo("vcs", {
 	description: "Version control infrastructure as code",
 	topics: ["iac", "vcs", "github", "gitlab", "git", "pulumi"],
-	requiredChecks: [
-		{ context: "check", integrationId: integrationIds.github },
-		{ context: "pulumi", integrationId: integrationIds.github },
-	],
+	requiredChecks: [{ context: "required", integrationId: integrationIds.github }],
 });
 
 export const pulumiComponents = new PublicRepo("pulumi-components", {
