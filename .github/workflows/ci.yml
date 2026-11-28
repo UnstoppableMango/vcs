@@ -34,27 +34,6 @@ jobs:
           NEEDS: ${{ toJSON(needs) }}
         run: jq -e 'all(.[]; .result == "success" or .result == "skipped")' <<<"$NEEDS"
 
-  # Required until the ruleset switches to `required` (#162).
-  check:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - uses: unmango/actions/setup-nix@e8bbcbd12a2c521c5cb36957c00a7a8f4fe2e766 # v2.0.0
-        with:
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
-
-      # `unmango` is where the github and gitlab provider plugins come from.
-      # Without it every run rebuilds both from source, which is a long Go
-      # build each.
-      - uses: cachix/cachix-action@38b082610b782e7e93e209c35fd730d399dee866 # v17
-        with:
-          name: unmango
-
-      - run: nix flake check
-
   # Previews only. The Pulumi Kubernetes Operator Stack `vcs` in
   # UnstoppableMango/the-cluster (apps/vcs/stack.yml) applies prod, with a
   # refresh, for each commit on main. Previews are read-only and take no part
